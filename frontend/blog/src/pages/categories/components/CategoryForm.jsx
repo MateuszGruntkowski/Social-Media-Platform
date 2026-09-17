@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Folder, Plus } from "lucide-react";
 import styles from "../styles/CategoryForm.module.css";
 
-const CategoryForm = ({ onAddCategory, error }) => {
+const CategoryForm = ({ onAddCategory }) => {
   const [newCategoryName, setNewCategoryName] = useState("");
 
   const handleSubmit = async (e) => {

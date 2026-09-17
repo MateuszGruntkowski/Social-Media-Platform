@@ -56,7 +56,6 @@ const EditPostForm = ({
       />
 
       <EditImageUpload
-        image={formData.image}
         currentImageUrl={formData.currentImageUrl}
         loadingImage={loadingImage}
         onImageChange={handleImageChange}

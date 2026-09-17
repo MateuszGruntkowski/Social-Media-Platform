@@ -69,7 +69,7 @@ const Categories = () => {
 
         {error && <div className="alert alert-error">{error}</div>}
 
-        <CategoryForm onAddCategory={handleAddCategory} error={error} />
+        <CategoryForm onAddCategory={handleAddCategory}/>
 
         <CategoryTable
           categories={categories}

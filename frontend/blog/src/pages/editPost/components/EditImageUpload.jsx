@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "../styles/EditImageUpload.module.css";
 
 const EditImageUpload = ({
-  image,
   currentImageUrl,
   loadingImage,
   onImageChange,
