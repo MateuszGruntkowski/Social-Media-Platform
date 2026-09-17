@@ -44,7 +44,6 @@ const PostContent = ({ post }) => {
 
     loadImage();
 
-    // Cleanup function to revoke object URL
     return () => {
       if (imageData) {
         URL.revokeObjectURL(imageData);
@@ -54,9 +53,13 @@ const PostContent = ({ post }) => {
 
   return (
     <div className={styles.content}>
-      {/* Post Image */}
       {post?.image && (
         <div className={styles.imageContainer}>
+          {imageLoading && (
+              <div className={styles.imageLoading}>
+                <span>Loading image...</span>
+              </div>
+          )}
           {imageError && (
             <div className={styles.imageError}>
               <span>Failed to load image</span>
@@ -72,7 +75,6 @@ const PostContent = ({ post }) => {
         </div>
       )}
 
-      {/* Post Content */}
       <div
         className={styles.postText}
         dangerouslySetInnerHTML={{ __html: getMarkdownAsHtml(content) }}
