@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import styles from "../styles/ImageUpload.module.css";
 
-const ImageUpload = ({ image, onImageChange, onError }) => {
+const ImageUpload = ({ onImageChange, onError }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -26,7 +26,7 @@ const ImageUpload = ({ image, onImageChange, onError }) => {
       const reader = new FileReader();
       reader.onload = (e) => setImagePreview(e.target.result);
       reader.readAsDataURL(file);
-      onError(""); // Clear any previous errors
+      onError("");
     }
   };
 

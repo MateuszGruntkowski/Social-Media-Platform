@@ -51,7 +51,6 @@ const PostForm = ({
       />
 
       <ImageUpload
-        image={formData.image}
         onImageChange={handleImageChange}
         onError={onError}
       />

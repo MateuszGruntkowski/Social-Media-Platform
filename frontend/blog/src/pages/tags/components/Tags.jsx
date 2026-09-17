@@ -67,7 +67,7 @@ const Tags = () => {
 
         {error && <div className="alert alert-error">{error}</div>}
 
-        <TagForm onAddTags={handleAddTags} error={error} />
+        <TagForm onAddTags={handleAddTags}/>
 
         <TagTable tags={tags} onDeleteTag={handleDeleteTag} />
       </div>

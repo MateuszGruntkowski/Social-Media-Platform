@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tag, Plus } from "lucide-react";
 import styles from "../styles/TagForm.module.css";
 
-const TagForm = ({ onAddTags, error }) => {
+const TagForm = ({ onAddTags }) => {
   const [newTagNames, setNewTagNames] = useState("");
 
   const handleSubmit = async (e) => {
