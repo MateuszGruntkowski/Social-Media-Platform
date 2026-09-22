@@ -2,10 +2,6 @@
 
 A full-featured social media platform with post creation, drafts, image uploads, comments, likes, and admin moderation. Users can write and share content, while admins manage tags, categories, and moderate posts.
 
-## Demo (YT video)
-
-[![Watch the demo](https://img.shields.io/badge/▶_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=X5pyNqrwhNY)
-
 ## Preview
 https://github.com/user-attachments/assets/322595e5-01a3-4fb6-a4d8-f4283f655307
 
