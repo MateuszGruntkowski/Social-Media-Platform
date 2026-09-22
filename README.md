@@ -6,13 +6,14 @@ A full-featured social media platform with post creation, drafts, image uploads,
 
 [![Watch the demo](https://img.shields.io/badge/▶_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=X5pyNqrwhNY)
 
+## Preview
+https://github.com/user-attachments/assets/322595e5-01a3-4fb6-a4d8-f4283f655307
+
 ## Screenshots
 ![Home Page](Screenshots/Home.png)
 ![Post](Screenshots/Post.png)
-![Comments](Screenshots/Comments.png)
 ![New Post](Screenshots/NewPost.png)
-![Draft Posts](Screenshots/DraftPosts.png)
-![Categories](Screenshots/Categories.png)
+
 
 ## Main Features
 
