@@ -10,15 +10,18 @@ const LikeButton = ({ isLiked, likesCount, onLike, disabled }) => {
   };
 
   return (
-    <button
-      onClick={onLike}
-      className={`${styles.likeButton} ${isLiked ? styles.liked : ""}`}
-      disabled={disabled}
-      title={isLiked ? "Undo like" : "Like post"}
-    >
-      <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
-      <span className={styles.likesCount}>{getLikesText(likesCount)}</span>
-    </button>
+      <button
+          type="button"
+          onClick={onLike}
+          className={`${styles.likeButton} ${isLiked ? styles.liked : ""}`}
+          disabled={disabled}
+          title={isLiked ? "Undo like" : "Like post"}
+          aria-pressed={!!isLiked}
+          aria-label={`${isLiked ? "Undo like" : "Like post"}, ${likesCount} likes`}
+      >
+        <Heart size={16} fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />
+        <span className={styles.likesCount}>{getLikesText(likesCount)}</span>
+      </button>
   );
 };
 

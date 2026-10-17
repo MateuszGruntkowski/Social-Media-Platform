@@ -1,114 +1,112 @@
-/* PostFilters.module.css - Minimalist Style */
-
-.filtersContainer {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-  transition: all 0.2s ease;
-  position: sticky;
-  top: 2rem;
-  z-index: 10;
+.filters {
+  display: flex;
+  flex-direction: column;
 }
 
-.filtersContainer:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.filtersHeader h3 {
-  margin: 0 0 1.5rem 0;
-  color: #374151;
-  font-size: 1.25rem;
-  font-weight: 700;
+.scroller {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-.filterSection {
-  margin-bottom: 1.25rem;
+.scroller::-webkit-scrollbar {
+  display: none;
 }
 
-.filterSection:last-child {
-  margin-bottom: 0;
+/* Category tabs */
+.categories {
+  border-bottom: 1px solid #e7e5dc;
 }
 
-.filterButtons {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 0.75rem;
-}
-
-.filterBtn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e5e7eb;
-  background: white;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.85rem;
+.tab {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 0.8rem 0.125rem 0.7rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
   font-weight: 500;
-  transition: all 0.2s ease;
-  color: #6b7280;
-  min-width: 60px;
-  text-align: center;
+  color: #77786a;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease;
 }
 
-.filterBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  color: #374151;
-  border-color: #d1d5db;
+.tab:hover {
+  color: #252821;
 }
 
-.filterBtn.active {
-  background: #4074e6;
-  color: white;
-  border-color: #4074e6;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(64, 116, 230, 0.25);
+.tabActive {
+  color: #252821;
 }
 
-.filterBtn.active:hover {
-  background: #3662d4;
-  border-color: #3662d4;
+.tabActive::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: #737b59;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .filtersHeader h3 {
-    font-size: 1.1rem;
-  }
-
-  .filterBtn {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
-  }
+.tab:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: -2px;
+  border-radius: 4px;
 }
 
-@media (max-width: 768px) {
-  .filtersContainer {
-    padding: 1.25rem;
-    border-radius: 12px;
-  }
+/* Tag chips */
+.tags {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e7e5dc;
+}
 
-  .filtersHeader h3 {
-    font-size: 1.1rem;
-  }
+.tags .scroller {
+  gap: 0.5rem;
+}
 
-  .filterButtons {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
+.tag {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid #e7e5dc;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #77786a;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease,
+  background-color 0.15s ease;
+}
 
-  .filterBtn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-    min-width: 60px;
-    text-align: center;
-    width: auto;
-    border-radius: 20px;
+.tag:hover {
+  color: #252821;
+  border-color: #d3d0c3;
+}
+
+.tagActive,
+.tagActive:hover {
+  color: #252821;
+  border-color: #737b59;
+  background: rgba(115, 123, 89, 0.14);
+}
+
+.tag:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .tag {
+    transition: none;
   }
 }

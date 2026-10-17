@@ -1,85 +1,85 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useNavigate } from "react-router";
-import { Shield, Crown, Settings } from "lucide-react";
+import { FileText, LogOut, PenLine } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Navbar.module.css";
+
+const linkClass = ({ isActive }) =>
+    `${styles.link} ${isActive ? styles.active : ""}`;
+
+const actionClass = ({ isActive }) =>
+    `${styles.action} ${isActive ? styles.actionActive : ""}`;
 
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
-  console.log(user);
+  const admin = isAdmin();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
-    <nav className={styles.navbar}>
-      <div className="container">
-        <div className={styles.container}>
+      <nav className={styles.navbar} aria-label="Main">
+        <div className={styles.inner}>
           <div className={styles.left}>
             <Link to="/" className={styles.brand}>
               Blog Platform
             </Link>
-            {/* Admin Status Indicator */}
-            {user && isAdmin() && (
-              <div className={styles.adminIndicator}>
-                <Crown size={16} />
-                <span className={styles.adminText}>Admin View</span>
-              </div>
-            )}
+            {/* Admin status indicator */}
+            {user && admin && <span className={styles.admin}>Admin</span>}
           </div>
-          <ul className={styles.nav}>
-            <>
-              {isAdmin() && (
+
+          {admin && (
+              <ul className={styles.links}>
                 <li>
-                  <Link
-                    to="/categories"
-                    className={`${styles.link} ${styles.adminLink}`}
-                  >
-                    <Settings size={16} />
+                  <NavLink to="/categories" className={linkClass}>
                     Categories
-                  </Link>
+                  </NavLink>
                 </li>
-              )}
-              {isAdmin() && (
                 <li>
-                  <Link
-                    to="/tags"
-                    className={`${styles.link} ${styles.adminLink}`}
-                  >
-                    <Settings size={16} />
+                  <NavLink to="/tags" className={linkClass}>
                     Tags
-                  </Link>
+                  </NavLink>
                 </li>
-              )}
-            </>
-          </ul>
-          <div className={styles.userActions}>
+              </ul>
+          )}
+
+          <div className={styles.actions}>
             {user ? (
-              <>
-                <Link to="/posts/drafts" className="btn btn-secondary">
-                  Draft Posts
-                </Link>
-                <Link to="/posts/new" className="btn btn-primary">
-                  New Post
-                </Link>
-                <button
-                  className="btn btn-outline"
-                  onClick={() => {
-                    logout();
-                    navigate("/");
-                  }}
-                >
-                  Logout
-                </button>
-              </>
+                <>
+                  <NavLink
+                      to="/posts/drafts"
+                      className={actionClass}
+                      title="Draft Posts"
+                  >
+                    <FileText size={16} className={styles.icon} aria-hidden="true" />
+                    <span className={styles.actionLabel}>Draft Posts</span>
+                  </NavLink>
+                  <Link to="/posts/new" className={styles.primary} title="New Post">
+                    <PenLine size={16} className={styles.icon} aria-hidden="true" />
+                    <span className={styles.actionLabel}>New Post</span>
+                  </Link>
+                  <button
+                      type="button"
+                      className={styles.action}
+                      onClick={handleLogout}
+                      title="Logout"
+                  >
+                    <LogOut size={16} className={styles.icon} aria-hidden="true" />
+                    <span className={styles.actionLabel}>Logout</span>
+                  </button>
+                </>
             ) : (
-              <Link to="/auth" className="btn btn-primary">
-                Login / Register
-              </Link>
+                <Link to="/auth" className={styles.primary}>
+                  Login / Register
+                </Link>
             )}
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
   );
 };
 

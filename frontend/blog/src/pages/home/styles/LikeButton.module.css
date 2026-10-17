@@ -1,96 +1,55 @@
 /* LikeButton.module.css */
 
 .likeButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 2px solid #dee2e6;
-  background: white;
-  color: #6c757d;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
   position: relative;
-  overflow: hidden;
-  font-size: 0.875rem;
+  z-index: 1;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 32px;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #77786a;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .likeButton:hover {
-  border-color: #ff6b6b;
-  color: #ff6b6b;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.2);
+  color: #252821;
+  background: rgba(115, 123, 89, 0.14);
+}
+
+.likeButton:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: 1px;
 }
 
 .likeButton.liked {
-  border-color: #ff6b6b;
-  background: #ff6b6b;
-  color: white;
+  color: #737b59;
 }
 
-.likeButton.liked:hover {
-  background: #ff5252;
-  border-color: #ff5252;
+.likeButton.liked .likesCount {
+  color: #252821;
 }
 
 .likeButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.likeButton:active {
-  transform: scale(0.95);
+  opacity: 0.5;
+  cursor: default;
 }
 
 .likesCount {
-  font-weight: 600;
-  min-width: 1.5rem;
-  text-align: center;
+  min-width: 0.75rem;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Heart icon animation */
-.likeButton svg {
-  transition: all 0.3s ease;
-}
-
-.likeButton:hover svg {
-  transform: scale(1.1);
-}
-
-.likeButton.liked svg {
-  animation: heartBeat 0.6s ease-in-out;
-}
-
-@keyframes heartBeat {
-  0% {
-    transform: scale(1);
-  }
-  14% {
-    transform: scale(1.3);
-  }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.3);
-  }
-  70% {
-    transform: scale(1);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
+@media (prefers-reduced-motion: reduce) {
   .likeButton {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
-  }
-
-  .likeButton svg {
-    width: 14px;
-    height: 14px;
+    transition: none;
   }
 }
