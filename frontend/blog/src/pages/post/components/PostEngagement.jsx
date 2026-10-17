@@ -14,25 +14,30 @@ const PostEngagement = ({ post, onLikeToggle }) => {
     }
   };
 
+  const likesCount = post.likesCount || 0;
+  const liked = !!post.isLikedByCurrentUser;
+
   return (
-    <div className={styles.engagement}>
-      <div className={styles.likesSection}>
-        <button
-          onClick={handleLikeToggle}
-          className={`${styles.btnLike} ${
-            post.isLikedByCurrentUser ? styles.liked : ""
-          }`}
-          disabled={likingPost}
-          title={post.isLikedByCurrentUser ? "undo like" : "like post"}
-        >
-          <Heart
-            size={20}
-            fill={post.isLikedByCurrentUser ? "currentColor" : "none"}
-          />
-          <span className={styles.likesCount}>{post.likesCount || 0}</span>
-        </button>
+      <div className={styles.engagement}>
+        <div className={styles.likesSection}>
+          <button
+              type="button"
+              onClick={handleLikeToggle}
+              className={`${styles.btnLike} ${liked ? styles.liked : ""}`}
+              disabled={likingPost}
+              title={liked ? "undo like" : "like post"}
+              aria-pressed={liked}
+              aria-label={`${liked ? "Undo like" : "Like post"}, ${likesCount} likes`}
+          >
+            <Heart
+                size={18}
+                fill={liked ? "currentColor" : "none"}
+                aria-hidden="true"
+            />
+            <span className={styles.likesCount}>{likesCount}</span>
+          </button>
+        </div>
       </div>
-    </div>
   );
 };
 

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Send } from "lucide-react";
 import apiService from "../../../services/apiService";
 import styles from "../styles/CommentForm.module.css";
 
@@ -35,38 +34,36 @@ const CommentForm = ({ postId, onCommentAdded }) => {
   };
 
   return (
-    <div className={styles.formWrapper}>
-      <h3 className={styles.formTitle}>Add comment</h3>
-      <form onSubmit={handleCommentSubmit} className={styles.form}>
-        <div className={styles.editor}>
-          <div className="form-group">
-            <textarea
-              value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
-              className={`form-textarea ${styles.textarea}`}
-              placeholder="Enter your comment..."
-              rows={4}
-              disabled={submittingComment}
-            />
-          </div>
+      <div className={styles.formWrapper}>
+        <h3 className={styles.srOnly}>Add comment</h3>
+        <form onSubmit={handleCommentSubmit} className={styles.form}>
+        <textarea
+            value={commentContent}
+            onChange={(e) => setCommentContent(e.target.value)}
+            className={styles.textarea}
+            placeholder="Enter your comment..."
+            aria-label="Comment"
+            rows={3}
+            disabled={submittingComment}
+        />
 
           {commentError && (
-            <div className="alert alert-error">{commentError}</div>
+              <p className={styles.error} role="alert">
+                {commentError}
+              </p>
           )}
 
           <div className={styles.formActions}>
             <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={submittingComment || !commentContent.trim()}
+                type="submit"
+                className={styles.submit}
+                disabled={submittingComment || !commentContent.trim()}
             >
-              <Send size={16} />
               {submittingComment ? "Adding..." : "Add Comment"}
             </button>
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
   );
 };
 

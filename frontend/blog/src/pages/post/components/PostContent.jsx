@@ -21,65 +21,67 @@ const PostContent = ({ post }) => {
   };
 
   useEffect(() => {
-    const loadImage = async () => {
-      if (!post?.image?.id) return;
+    if (!post?.image?.id) return;
 
+    let cancelled = false;
+    let objectUrl = null;
+
+    const loadImage = async () => {
       try {
         setImageLoading(true);
         setImageError(false);
         const imageBlob = await apiService.getPostImage(post.image.id);
-        const imageUrl = URL.createObjectURL(
-          new Blob([imageBlob], {
-            type: post.image.contentType,
-          })
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(
+            new Blob([imageBlob], {
+              type: post.image.contentType,
+            })
         );
-        setImageData(imageUrl);
+        setImageData(objectUrl);
       } catch (error) {
         console.error("Error loading image:", error);
-        setImageError(true);
+        if (!cancelled) setImageError(true);
       } finally {
-        setImageLoading(false);
+        if (!cancelled) setImageLoading(false);
       }
     };
 
     loadImage();
 
+    // Revoke the object URL created by this effect run
     return () => {
-      if (imageData) {
-        URL.revokeObjectURL(imageData);
+      cancelled = true;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     };
   }, [post?.image?.id]);
 
   return (
-    <div className={styles.content}>
-      {post?.image && (
-        <div className={styles.imageContainer}>
-          {imageLoading && (
-              <div className={styles.imageLoading}>
-                <span>Loading image...</span>
-              </div>
-          )}
-          {imageError && (
-            <div className={styles.imageError}>
-              <span>Failed to load image</span>
+      <div className={styles.content}>
+        {post?.image && (
+            <div className={styles.image}>
+              {imageLoading && <div className={styles.imageLoading} />}
+              {imageError && (
+                  <div className={styles.imageError}>
+                    <span>Failed to load image</span>
+                  </div>
+              )}
+              {imageData && !imageError && (
+                  <img
+                      src={imageData}
+                      alt={post.image.fileName || post.title}
+                      className={styles.imageEl}
+                  />
+              )}
             </div>
-          )}
-          {imageData && !imageError && (
-            <img
-              src={imageData}
-              alt={post.image.fileName || post.title}
-              className={styles.postImage}
-            />
-          )}
-        </div>
-      )}
+        )}
 
-      <div
-        className={styles.postText}
-        dangerouslySetInnerHTML={{ __html: getMarkdownAsHtml(content) }}
-      />
-    </div>
+        <div
+            className={styles.postText}
+            dangerouslySetInnerHTML={{ __html: getMarkdownAsHtml(content) }}
+        />
+      </div>
   );
 };
 

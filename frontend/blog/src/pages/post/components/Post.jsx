@@ -2,13 +2,28 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import apiService from "../../../services/apiService";
-import { ArrowLeft } from "lucide-react";
 
 import PostNavigation from "./PostNavigation";
 import PostArticle from "./PostArticle";
 import PostComments from "./PostComments";
-// import styles from "../styles/Post.module.css";
 import styles from "../styles/Post.module.css";
+
+const PostSkeleton = () => (
+    <div className={styles.skeleton} aria-hidden="true">
+      <div className={styles.skeletonAuthor}>
+        <div className={styles.skeletonAvatar} />
+        <div className={styles.skeletonMeta}>
+          <div className={`${styles.skeletonLine} ${styles.w30}`} />
+          <div className={`${styles.skeletonLine} ${styles.w20}`} />
+        </div>
+      </div>
+      <div className={`${styles.skeletonLine} ${styles.skeletonTitle}`} />
+      <div className={`${styles.skeletonLine} ${styles.w100}`} />
+      <div className={`${styles.skeletonLine} ${styles.w100}`} />
+      <div className={`${styles.skeletonLine} ${styles.w80}`} />
+      <div className={`${styles.skeletonLine} ${styles.w60}`} />
+    </div>
+);
 
 const Post = () => {
   const { id } = useParams();
@@ -97,60 +112,57 @@ const Post = () => {
     return isAdmin() || post.author.id === getUserId();
   };
 
+  const goBack = () => navigate(-1);
+
   if (loading) {
     return (
-      <div className="container">
-        <div className="loading">Loading post...</div>
-      </div>
+        <div className={styles.page}>
+          <div className={styles.inner}>
+            <PostNavigation onGoBack={goBack} canDelete={false} />
+            <span className={styles.srOnly} role="status">
+            Loading post…
+          </span>
+            <PostSkeleton />
+          </div>
+        </div>
     );
   }
 
-  if (error) {
+  if (error || !post) {
     return (
-      <div className="container">
-        <div className="alert alert-error">{error}</div>
-        <button onClick={() => navigate(-1)} className="btn btn-secondary">
-          <ArrowLeft size={16} />
-          Back
-        </button>
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div className="container">
-        <div className="alert alert-error">Post not found</div>
-        <button onClick={() => navigate(-1)} className="btn btn-secondary">
-          <ArrowLeft size={16} />
-          Back
-        </button>
-      </div>
+        <div className={styles.page}>
+          <div className={styles.inner}>
+            <PostNavigation onGoBack={goBack} canDelete={false} />
+            <div className={styles.errorState} role="alert">
+              <p className={styles.errorTitle}>{error || "Post not found"}</p>
+            </div>
+          </div>
+        </div>
     );
   }
 
   return (
-    <div className="container">
       <div className={styles.page}>
-        <PostNavigation
-          onGoBack={() => navigate(-1)}
-          canDelete={canDeletePost()}
-          onDelete={handleDeletePost}
-          isDeleting={deletingPost}
-        />
+        <div className={styles.inner}>
+          <PostNavigation
+              onGoBack={goBack}
+              canDelete={canDeletePost()}
+              onDelete={handleDeletePost}
+              isDeleting={deletingPost}
+          />
 
-        <PostArticle post={post} onLikeToggle={handleLikeToggle} />
+          <PostArticle post={post} onLikeToggle={handleLikeToggle} />
 
-        <PostComments
-          comments={comments}
-          commentsLoading={commentsLoading}
-          postId={id}
-          user={user}
-          onCommentAdded={handleCommentAdded}
-          onCommentDeleted={handleCommentDeleted}
-        />
+          <PostComments
+              comments={comments}
+              commentsLoading={commentsLoading}
+              postId={id}
+              user={user}
+              onCommentAdded={handleCommentAdded}
+              onCommentDeleted={handleCommentDeleted}
+          />
+        </div>
       </div>
-    </div>
   );
 };
 

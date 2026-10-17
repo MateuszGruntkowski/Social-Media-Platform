@@ -1,52 +1,47 @@
 import React from "react";
-import { User, Calendar, Clock } from "lucide-react";
 import { formatDate } from "../../../utils/formatDate";
 import styles from "../styles/PostHeader.module.css";
 
 const PostHeader = ({ post }) => {
-  const getReadingTimeText = (minutes) => {
-    if (minutes === 1) return "1 minute";
-    return `${minutes} minutes`;
-  };
+    const getReadingTimeText = (minutes) => `${minutes} min read`;
 
-  return (
-    <header className={styles.header}>
-      <h1 className={styles.title}>{post.title}</h1>
+    const authorName = post.author?.name || "Author unknown";
+    const initial = post.author?.name?.trim().charAt(0);
+    const tags = post.tags ? Array.from(post.tags) : [];
 
-      <div className={styles.meta}>
-        <div className={styles.metaItem}>
-          <User size={16} />
-          <span className={styles.author}>{post.author.name}</span>
-        </div>
-        <div className={styles.metaItem}>
-          <Calendar size={16} />
-          <span className={styles.date}>{formatDate(post.createdAt)}</span>
-        </div>
-        <div className={styles.metaItem}>
-          <Clock size={16} />
-          <span className={styles.readingTime}>
-            {getReadingTimeText(post.readingTime)}
-          </span>
-        </div>
-      </div>
+    return (
+        <header className={styles.header}>
+            <div className={styles.author}>
+                <div className={styles.avatar} aria-hidden="true">
+                    {initial || "?"}
+                </div>
+                <div className={styles.authorText}>
+                    <span className={styles.name}>{authorName}</span>
+                    <div className={styles.meta}>
+                        <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
+                        {post.readingTime && (
+                            <span>{getReadingTimeText(post.readingTime)}</span>
+                        )}
+                    </div>
+                </div>
+            </div>
 
-      <div className={styles.headerSecondary}>
-        {post.category && (
-          <div className={styles.category}>{post.category.name}</div>
-        )}
+            <h1 className={styles.title}>{post.title}</h1>
 
-        {post.tags && post.tags.length > 0 && (
-          <div className={styles.tags}>
-            {Array.from(post.tags).map((tag) => (
-              <span key={tag.id} className={styles.tag}>
-                #{tag.name}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </header>
-  );
+            {(post.category || tags.length > 0) && (
+                <p className={styles.taxonomy}>
+                    {post.category && (
+                        <span className={styles.category}>{post.category.name}</span>
+                    )}
+                    {tags.map((tag) => (
+                        <span key={tag.id} className={styles.tag}>
+              #{tag.name}
+            </span>
+                    ))}
+                </p>
+            )}
+        </header>
+    );
 };
 
 export default PostHeader;

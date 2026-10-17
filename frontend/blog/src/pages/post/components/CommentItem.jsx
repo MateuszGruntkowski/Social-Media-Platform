@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, Calendar, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { formatDate } from "../../../utils/formatDate";
 import apiService from "../../../services/apiService";
@@ -30,34 +30,37 @@ const CommentItem = ({ comment, onCommentDeleted }) => {
     }
   };
 
-  return (
-    <div className={styles.comment}>
-      <div className={styles.header}>
-        <div className={styles.authorInfo}>
-          <User size={16} />
-          <span className={styles.author}>{comment.author.name}</span>
-        </div>
-        <div className={styles.headerRight}>
-          <div className={styles.dateInfo}>
-            <Calendar size={14} />
-            <span className={styles.date}>{formatDate(comment.createdAt)}</span>
-          </div>
+  const initial = comment.author?.name?.trim().charAt(0);
 
-          {canDeleteComment() && (
-            <button
-              onClick={handleDeleteComment}
-              className="btn btn-danger btn-sm"
-              disabled={deletingComment}
-              title="Delete comment"
-            >
-              <Trash2 size={14} />
-              {deletingComment && "..."}
-            </button>
-          )}
+  return (
+      <div className={styles.comment}>
+        <div className={styles.avatar} aria-hidden="true">
+          {initial || "?"}
+        </div>
+
+        <div className={styles.body}>
+          <div className={styles.header}>
+            <span className={styles.author}>{comment.author.name}</span>
+            <time className={styles.date} dateTime={comment.createdAt}>
+              {formatDate(comment.createdAt)}
+            </time>
+
+            {canDeleteComment() && (
+                <button
+                    type="button"
+                    onClick={handleDeleteComment}
+                    className={styles.delete}
+                    disabled={deletingComment}
+                    title="Delete comment"
+                    aria-label="Delete comment"
+                >
+                  <Trash2 size={15} aria-hidden="true" />
+                </button>
+            )}
+          </div>
+          <div className={styles.content}>{comment.content}</div>
         </div>
       </div>
-      <div className={styles.content}>{comment.content}</div>
-    </div>
   );
 };
 

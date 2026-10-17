@@ -1,28 +1,61 @@
 .navigation {
-  margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap;
+  min-height: 56px;
 }
 
-.actions {
-  display: flex;
+.back,
+.delete {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.625rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .navigation {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
+.back {
+  margin-left: -0.625rem;
+  color: #77786a;
+}
 
-  .actions {
-    width: 100%;
-    justify-content: flex-end;
+.back:hover {
+  color: #252821;
+  background: rgba(37, 40, 33, 0.05);
+}
+
+.delete {
+  margin-right: -0.625rem;
+  color: #a0473a;
+}
+
+.delete:hover:not(:disabled) {
+  background: rgba(160, 71, 58, 0.08);
+}
+
+.delete:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.back:focus-visible,
+.delete:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back,
+  .delete {
+    transition: none;
   }
 }
