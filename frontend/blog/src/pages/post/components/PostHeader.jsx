@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDate } from "../../../utils/formatDate";
+import { formatDate } from "../../../utils/formatDate.js";
 import styles from "../styles/PostHeader.module.css";
 
 const PostHeader = ({ post }) => {

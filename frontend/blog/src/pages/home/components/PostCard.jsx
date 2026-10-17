@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, MessageCircle } from "lucide-react";
-import { formatDate } from "../../../utils/formatDate";
+import { formatDate } from "../../../utils/formatDate.js";
 import LikeButton from "./LikeButton";
 import apiService from "../../../services/apiService";
 import styles from "../styles/PostCard.module.css";

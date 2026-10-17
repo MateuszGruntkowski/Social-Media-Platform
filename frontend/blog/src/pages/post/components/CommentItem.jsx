@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
-import { formatDate } from "../../../utils/formatDate";
+import { formatDate } from "../../../utils/formatDate.js";
 import apiService from "../../../services/apiService";
 import styles from "../styles/CommentItem.module.css";
 

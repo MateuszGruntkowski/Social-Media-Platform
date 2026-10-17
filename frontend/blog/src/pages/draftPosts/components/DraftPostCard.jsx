@@ -1,139 +1,94 @@
-import React, { useState, useEffect } from "react";
-import { User, Calendar, Edit3, Trash2 } from "lucide-react";
+import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { ImageOff, Trash2 } from "lucide-react";
 import { formatDate } from "../../../utils/formatDate";
-import apiService from "../../../services/apiService";
+import { getExcerpt } from "../../../utils/getExcerpt";
+import { usePostImage } from "../hooks/usePostImage";
 import styles from "../styles/DraftPostCard.module.css";
 
-const DraftPostCard = ({ post, onEdit, onDelete, isDeleting }) => {
-  const [imageData, setImageData] = useState(null);
-  const [imageError, setImageError] = useState(false);
+const DraftPostCard = ({ post, onDelete, isDeleting }) => {
+  const { src, loading, error } = usePostImage(post.image);
+  const excerpt = useMemo(() => getExcerpt(post.content), [post.content]);
 
-  // Load image data if post has an image
-  useEffect(() => {
-    const loadImage = async () => {
-      if (!post.image?.id) return;
-
-      try {
-        setImageError(false);
-        const imageBlob = await apiService.getPostImage(post.image.id);
-        const imageUrl = URL.createObjectURL(
-          new Blob([imageBlob], {
-            type: post.image.contentType,
-          })
-        );
-        setImageData(imageUrl);
-      } catch (error) {
-        console.error("Error loading image:", error);
-        setImageError(true);
-      }
-    };
-
-    loadImage();
-
-    // Cleanup function
-    return () => {
-      if (imageData) {
-        URL.revokeObjectURL(imageData);
-      }
-    };
-  }, [post.image?.id]);
-
-  const handleEdit = () => {
-    onEdit(post.id);
-  };
-
-  const handleDelete = () => {
-    onDelete(post.id, post.title);
-  };
+  const title = post.title?.trim() || "Untitled draft";
+  const editPath = `/edit-post/${post.id}`;
+  const tags = Array.from(post.tags || []);
+  const lastChange = post.updatedAt || post.createdAt;
+  const dateLabel = `${post.updatedAt ? "Updated" : "Created"} ${formatDate(
+      lastChange
+  )}`;
 
   return (
-    <article className={styles.card}>
-      {/* Post Header */}
-      <div className={styles.cardHeader}>
-        <div className={styles.authorInfo}>
-          <div className={styles.authorAvatar}>
-            <User size={18} />
-          </div>
-          <div className={styles.authorDetails}>
-            <span className={styles.authorName}>
-              {post.author?.name || "Author unknown"}
-            </span>
-            <div className={styles.postMeta}>
-              <span className={styles.metaItem}>
-                <Calendar size={14} />
-                {formatDate(post.createdAt)}
-              </span>
-              <span className={styles.statusBadge}>Draft</span>
-            </div>
+      <article
+          className={`${styles.draft} ${isDeleting ? styles.deleting : ""}`}
+          aria-busy={isDeleting}
+      >
+        <div className={styles.main}>
+          {lastChange && (
+              <p className={styles.meta}>
+                <time dateTime={lastChange}>{dateLabel}</time>
+              </p>
+          )}
+
+          {/* Title — its link stretches over the whole row */}
+          <h2 className={styles.title}>
+            <Link to={editPath} className={styles.titleLink}>
+              {title}
+            </Link>
+          </h2>
+
+          {excerpt && <p className={styles.excerpt}>{excerpt}</p>}
+
+          {(post.category || tags.length > 0) && (
+              <p className={styles.taxonomy}>
+                {post.category && (
+                    <span className={styles.category}>{post.category.name}</span>
+                )}
+                {tags.map((tag) => (
+                    <span key={tag.id}>#{tag.name}</span>
+                ))}
+              </p>
+          )}
+
+          <div className={styles.actions}>
+            <Link
+                to={editPath}
+                className={styles.edit}
+                aria-label={`Edit draft: ${title}`}
+            >
+              Edit
+            </Link>
+            <button
+                type="button"
+                className={styles.delete}
+                onClick={() => onDelete(post)}
+                disabled={isDeleting}
+                aria-label={`Delete draft: ${title}`}
+            >
+              <Trash2 size={15} aria-hidden="true" />
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
           </div>
         </div>
 
-        {post.category && (
-          <div className={styles.category}>{post.category.name}</div>
+        {post.image && (
+            <div className={styles.thumb}>
+              {loading && <div className={styles.thumbLoading} />}
+              {error && (
+                  <span role="img" aria-label="Failed to load image">
+              <ImageOff size={18} aria-hidden="true" />
+            </span>
+              )}
+              {src && !error && (
+                  <img
+                      src={src}
+                      alt={post.image.fileName || title}
+                      className={styles.thumbImg}
+                  />
+              )}
+            </div>
         )}
-      </div>
-
-      {/* Post Title */}
-      <h2 className={styles.title}>{post.title}</h2>
-
-      {/* Post Image */}
-      {post.image && (
-        <div className={styles.imageContainer}>
-          {imageError && (
-            <div className={styles.imageError}>
-              <span>Failed to load image.</span>
-            </div>
-          )}
-          {imageData && !imageError && (
-            <img
-              src={imageData}
-              alt={post.image.fileName || post.title}
-              className={styles.postImage}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Post Content */}
-      <div className={styles.content}>
-        {post.content.substring(0, 200)}
-        {post.content.length > 200 && "..."}
-      </div>
-
-      {/* Post Tags */}
-      {post.tags && post.tags.length > 0 && (
-        <div className={styles.tags}>
-          {post.tags.map((tag) => (
-            <span key={tag.id} className={styles.tag}>
-              #{tag.name}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className={styles.actions}>
-        <button
-          onClick={handleEdit}
-          className={styles.editBtn}
-          title="Edit draft"
-        >
-          <Edit3 size={16} />
-          Edit
-        </button>
-
-        <button
-          onClick={handleDelete}
-          // className={styles.deleteBtn}
-          className="btn btn-danger"
-          disabled={isDeleting}
-          title="Delete draft"
-        >
-          <Trash2 size={16} />
-          {isDeleting ? "Deleting..." : "Delete"}
-        </button>
-      </div>
-    </article>
+      </article>
   );
 };
 
