@@ -9,13 +9,12 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./pages/navbar/Navbar";
 import Home from "./pages/home/components/Home";
 import Auth from "./pages/auth/Auth";
-import Categories from "./pages/categories/components/Categories";
-import Tags from "./pages/tags/components/Tags";
 import DraftPosts from "./pages/draftPosts/components/DraftPosts";
 import Post from "./pages/post/components/Post";
 import EditPost from "./pages/editPost/components/EditPost";
 import "./App.css";
 import NewPost from "./pages/newPost/components/NewPost";
+import CategoriesAndTags from "./pages/CategoriesAndTags/components/CategoriesAndTags.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -37,8 +36,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/tags" element={<Tags />} />
+              <Route path="/categories-tags" element={<CategoriesAndTags />} />
               <Route path="/posts/:id" element={<Post />} />
               <Route
                 path="/edit-post/:id"

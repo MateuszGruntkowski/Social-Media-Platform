@@ -28,20 +28,14 @@ const Navbar = () => {
             <Link to="/" className={styles.brand}>
               Blog Platform
             </Link>
-            {/* Admin status indicator */}
             {user && admin && <span className={styles.admin}>Admin</span>}
           </div>
 
           {admin && (
               <ul className={styles.links}>
                 <li>
-                  <NavLink to="/categories" className={linkClass}>
-                    Categories
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/tags" className={linkClass}>
-                    Tags
+                  <NavLink to="/categories-tags" className={linkClass}>
+                    Categories &amp; Tags
                   </NavLink>
                 </li>
               </ul>
