@@ -8,11 +8,11 @@ export const getExcerpt = (markdown, maxLength = 200) => {
     if (!markdown) return "";
 
     const html = marked.parse(markdown).replace(BLOCK_END, " ");
-    const text = (
-        new DOMParser().parseFromString(html, "text/html").body.textContent || ""
-    )
-        .replace(/\s+/g, " ")
-        .trim();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    doc.querySelectorAll("script, style").forEach((el) => el.remove());
+
+    const text = (doc.body.textContent || "").replace(/\s+/g, " ").trim();
 
     if (text.length <= maxLength) return text;
 

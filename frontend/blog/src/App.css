@@ -5,8 +5,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-  sans-serif;
+  font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.6;
   color: #252821;
   background: #f7f5f0;
@@ -30,7 +29,12 @@ body {
   padding: 0 20px;
 }
 
-/* Minimalist Buttons */
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+}
+
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -104,7 +108,6 @@ body {
   box-shadow: 0 4px 12px rgba(160, 71, 58, 0.25);
 }
 
-/* Forms */
 .form-group {
   margin-bottom: 20px;
 }
@@ -149,7 +152,6 @@ body {
   line-height: 1.6;
 }
 
-/* Alerts */
 .alert {
   padding: 16px 20px;
   border-radius: 15px;
@@ -171,7 +173,6 @@ body {
   border-left: 4px solid #737b59;
 }
 
-/* Loading */
 .loading {
   text-align: center;
   padding: 4rem 2rem;
@@ -194,7 +195,6 @@ a:hover {
   color: #5a6145;
 }
 
-/* Typography */
 h1,
 h2,
 h3,
@@ -207,7 +207,6 @@ h6 {
   margin-bottom: 0.5em;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -226,13 +225,40 @@ h6 {
   background: rgba(115, 123, 89, 0.8);
 }
 
-/* Selection */
 ::selection {
   background: rgba(115, 123, 89, 0.3);
   color: #252821;
 }
 
-/* Responsive */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skeleton {
+  background: #e7e5dc;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;
@@ -246,6 +272,6 @@ h6 {
   .form-input,
   .form-textarea,
   .form-select {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
   }
 }
