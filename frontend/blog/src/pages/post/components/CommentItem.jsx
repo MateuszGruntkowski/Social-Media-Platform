@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
-import { formatDate } from "../../../utils/formatDate.js";
+import { formatDate } from "../../../utils/formatDate";
 import apiService from "../../../services/apiService";
 import styles from "../styles/CommentItem.module.css";
 
@@ -11,7 +11,10 @@ const CommentItem = ({ comment, onCommentDeleted }) => {
 
   const canDeleteComment = () => {
     if (!user) return false;
-    return isAdmin() || comment.author.id === getUserId();
+    return (
+        isAdmin() ||
+        (comment.author?.id != null && comment.author.id === getUserId())
+    );
   };
 
   const handleDeleteComment = async () => {
@@ -30,6 +33,7 @@ const CommentItem = ({ comment, onCommentDeleted }) => {
     }
   };
 
+  const authorName = comment.author?.name || "Author unknown";
   const initial = comment.author?.name?.trim().charAt(0);
 
   return (
@@ -40,7 +44,7 @@ const CommentItem = ({ comment, onCommentDeleted }) => {
 
         <div className={styles.body}>
           <div className={styles.header}>
-            <span className={styles.author}>{comment.author.name}</span>
+            <span className={styles.author}>{authorName}</span>
             <time className={styles.date} dateTime={comment.createdAt}>
               {formatDate(comment.createdAt)}
             </time>

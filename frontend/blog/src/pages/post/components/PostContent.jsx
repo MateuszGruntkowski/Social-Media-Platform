@@ -1,75 +1,34 @@
-import React, { useState, useEffect } from "react";
-import apiService from "../../../services/apiService";
-import styles from "../styles/PostContent.module.css";
+import React, { useMemo } from "react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { usePostImage } from "../../../hooks/usePostImage.js";
+import styles from "../styles/PostContent.module.css";
 
-marked.setOptions({
-  breaks: true, // Converts \n to <br>
-  gfm: true, // GitHub Flavored Markdown
-});
+// breaks: newline -> <br>; gfm: GitHub Flavored Markdown.
+// Passed per call, not via marked.setOptions, so other markdown consumers
+// (e.g. getExcerpt) are not affected by this component being imported.
+const MARKED_OPTIONS = { breaks: true, gfm: true };
+
+const renderMarkdown = (markdown) =>
+    DOMPurify.sanitize(marked.parse(markdown || "", MARKED_OPTIONS));
 
 const PostContent = ({ post }) => {
-  const [imageData, setImageData] = useState(null);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const content = post.content;
-
-  const getMarkdownAsHtml = (markdown) => {
-    const html = marked.parse(markdown || "");
-    return DOMPurify.sanitize(html);
-  };
-
-  useEffect(() => {
-    if (!post?.image?.id) return;
-
-    let cancelled = false;
-    let objectUrl = null;
-
-    const loadImage = async () => {
-      try {
-        setImageLoading(true);
-        setImageError(false);
-        const imageBlob = await apiService.getPostImage(post.image.id);
-        if (cancelled) return;
-        objectUrl = URL.createObjectURL(
-            new Blob([imageBlob], {
-              type: post.image.contentType,
-            })
-        );
-        setImageData(objectUrl);
-      } catch (error) {
-        console.error("Error loading image:", error);
-        if (!cancelled) setImageError(true);
-      } finally {
-        if (!cancelled) setImageLoading(false);
-      }
-    };
-
-    loadImage();
-
-    // Revoke the object URL created by this effect run
-    return () => {
-      cancelled = true;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, [post?.image?.id]);
+  const { src, loading, error } = usePostImage(post.image);
+  const html = useMemo(() => renderMarkdown(post.content), [post.content]);
 
   return (
       <div className={styles.content}>
-        {post?.image && (
+        {post.image && (
             <div className={styles.image}>
-              {imageLoading && <div className={styles.imageLoading} />}
-              {imageError && (
+              {loading && <div className={`skeleton ${styles.imageLoading}`} />}
+              {error && (
                   <div className={styles.imageError}>
                     <span>Failed to load image</span>
                   </div>
               )}
-              {imageData && !imageError && (
+              {src && !error && (
                   <img
-                      src={imageData}
+                      src={src}
                       alt={post.image.fileName || post.title}
                       className={styles.imageEl}
                   />
@@ -79,7 +38,7 @@ const PostContent = ({ post }) => {
 
         <div
             className={styles.postText}
-            dangerouslySetInnerHTML={{ __html: getMarkdownAsHtml(content) }}
+            dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>
   );

@@ -1,14 +1,8 @@
 import React from "react";
 import { Heart } from "lucide-react";
-import styles from "../styles/LikeButton.module.css";
+import styles from "./LikeButton.module.css";
 
-const LikeButton = ({ isLiked, likesCount, onLike, disabled }) => {
-  const getLikesText = (count) => {
-    if (count === 0) return "0";
-    if (count === 1) return "1";
-    return `${count}`;
-  };
-
+const LikeButton = ({ isLiked, likesCount, onLike, disabled, size = 16 }) => {
   return (
       <button
           type="button"
@@ -19,8 +13,8 @@ const LikeButton = ({ isLiked, likesCount, onLike, disabled }) => {
           aria-pressed={!!isLiked}
           aria-label={`${isLiked ? "Undo like" : "Like post"}, ${likesCount} likes`}
       >
-        <Heart size={16} fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />
-        <span className={styles.likesCount}>{getLikesText(likesCount)}</span>
+        <Heart size={size} fill={isLiked ? "currentColor" : "none"} aria-hidden="true" />
+        <span className={styles.likesCount}>{likesCount}</span>
       </button>
   );
 };

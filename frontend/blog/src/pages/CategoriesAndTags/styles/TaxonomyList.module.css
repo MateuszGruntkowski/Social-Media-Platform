@@ -110,8 +110,6 @@
 .skeletonCount {
     height: 0.75rem;
     border-radius: 4px;
-    background: #e7e5dc;
-    animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonName {
@@ -122,32 +120,9 @@
     width: 4rem;
 }
 
-@keyframes pulse {
-    50% {
-        opacity: 0.5;
-    }
-}
-
-.srOnly {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
     .delete,
     .retry {
         transition: none;
-    }
-
-    .skeletonName,
-    .skeletonCount {
-        animation: none;
     }
 }

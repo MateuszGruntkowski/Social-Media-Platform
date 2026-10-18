@@ -25,34 +25,33 @@ const DraftPosts = () => {
   };
 
   return (
-      <div className={styles.page}>
-        <main className={styles.inner}>
-          <header className={styles.header}>
-            <h1 className={styles.title}>Drafts</h1>
-            <p className={styles.description}>
-              Continue working on your unpublished posts.
+      <main className="page">
+        <header className={styles.header}>
+          <h1 className={styles.title}>Drafts</h1>
+          <p className={styles.description}>
+            Continue working on your unpublished posts.
+          </p>
+        </header>
+
+        {/* Live region stays mounted so the notice is announced when it appears */}
+        <div role="status">
+          {notice && <p className={styles.notice}>{notice}</p>}
+        </div>
+        {error && (
+            <p className={styles.error} role="alert">
+              {error}
             </p>
-          </header>
+        )}
 
-          <div role="status">
-            {notice && <p className={styles.notice}>{notice}</p>}
-          </div>
-          {error && (
-              <p className={styles.error} role="alert">
-                {error}
-              </p>
-          )}
-
-          <DraftPostsList
-              posts={posts}
-              loading={loading}
-              loadFailed={loadFailed}
-              deletingId={deletingId}
-              onDelete={handleDelete}
-              onRetry={reload}
-          />
-        </main>
-      </div>
+        <DraftPostsList
+            posts={posts}
+            loading={loading}
+            loadFailed={loadFailed}
+            deletingId={deletingId}
+            onDelete={handleDelete}
+            onRetry={reload}
+        />
+      </main>
   );
 };
 

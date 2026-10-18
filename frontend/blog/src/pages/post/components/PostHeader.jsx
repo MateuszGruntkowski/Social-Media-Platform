@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDate } from "../../../utils/formatDate.js";
+import { formatDate } from "../../../utils/formatDate";
 import styles from "../styles/PostHeader.module.css";
 
 const PostHeader = ({ post }) => {
@@ -19,7 +19,7 @@ const PostHeader = ({ post }) => {
                     <span className={styles.name}>{authorName}</span>
                     <div className={styles.meta}>
                         <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
-                        {post.readingTime && (
+                        {post.readingTime > 0 && (
                             <span>{getReadingTimeText(post.readingTime)}</span>
                         )}
                     </div>

@@ -24,8 +24,6 @@
 .imageLoading {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #e7e5dc;
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .imageError {
@@ -35,12 +33,6 @@
   height: 180px;
   font-size: 0.875rem;
   color: #77786a;
-}
-
-@keyframes pulse {
-  50% {
-    opacity: 0.5;
-  }
 }
 
 /* Text */
@@ -186,11 +178,5 @@
 
   .imageEl {
     max-height: 340px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .imageLoading {
-    animation: none;
   }
 }

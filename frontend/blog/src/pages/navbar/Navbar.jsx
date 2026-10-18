@@ -1,6 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useNavigate } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FileText, LogOut, PenLine } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Navbar.module.css";

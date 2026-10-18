@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import CommentForm from "./CommentForm";
 import CommentsList from "./CommentsList";
 import styles from "../styles/PostComments.module.css";
@@ -6,6 +7,7 @@ import styles from "../styles/PostComments.module.css";
 const PostComments = ({
                           comments,
                           commentsLoading,
+                          commentsError,
                           postId,
                           user,
                           onCommentAdded,
@@ -23,7 +25,7 @@ const PostComments = ({
             ) : (
                 <div className={styles.loginPrompt}>
                     <p>
-                        <a href="/login">Sign in</a> to add a comment.
+                        <Link to="/auth">Sign in</Link> to add a comment.
                     </p>
                 </div>
             )}
@@ -31,6 +33,7 @@ const PostComments = ({
             <CommentsList
                 comments={comments}
                 loading={commentsLoading}
+                loadFailed={commentsError}
                 onCommentDeleted={onCommentDeleted}
             />
         </section>

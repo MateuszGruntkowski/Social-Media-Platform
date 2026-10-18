@@ -29,12 +29,14 @@ body {
   padding: 0 20px;
 }
 
+/* Narrow single-column page (Home, Post, Categories & Tags, Drafts, Auth) */
 .page {
   max-width: 720px;
   margin: 0 auto;
   padding: 0 1rem 4rem;
 }
 
+/* Minimalist Buttons */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -108,6 +110,7 @@ body {
   box-shadow: 0 4px 12px rgba(160, 71, 58, 0.25);
 }
 
+/* Forms */
 .form-group {
   margin-bottom: 20px;
 }
@@ -152,6 +155,7 @@ body {
   line-height: 1.6;
 }
 
+/* Alerts */
 .alert {
   padding: 16px 20px;
   border-radius: 15px;
@@ -173,6 +177,7 @@ body {
   border-left: 4px solid #737b59;
 }
 
+/* Loading */
 .loading {
   text-align: center;
   padding: 4rem 2rem;
@@ -195,6 +200,7 @@ a:hover {
   color: #5a6145;
 }
 
+/* Typography */
 h1,
 h2,
 h3,
@@ -207,6 +213,7 @@ h6 {
   margin-bottom: 0.5em;
 }
 
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -225,11 +232,13 @@ h6 {
   background: rgba(115, 123, 89, 0.8);
 }
 
+/* Selection */
 ::selection {
   background: rgba(115, 123, 89, 0.3);
   color: #252821;
 }
 
+/* Utilities */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -242,6 +251,7 @@ h6 {
   border: 0;
 }
 
+/* Loading placeholder: color and pulse shared by every skeleton block */
 .skeleton {
   background: #e7e5dc;
   animation: skeleton-pulse 1.4s ease-in-out infinite;
@@ -259,6 +269,7 @@ h6 {
   }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;
@@ -272,6 +283,6 @@ h6 {
   .form-input,
   .form-textarea,
   .form-select {
-    font-size: 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
   }
 }

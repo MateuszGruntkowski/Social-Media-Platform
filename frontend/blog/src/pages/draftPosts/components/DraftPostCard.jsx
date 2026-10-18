@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ImageOff, Trash2 } from "lucide-react";
 import { formatDate } from "../../../utils/formatDate";
 import { getExcerpt } from "../../../utils/getExcerpt";
-import { usePostImage } from "../hooks/usePostImage";
+import { usePostImage } from "../../../hooks/usePostImage.js";
 import styles from "../styles/DraftPostCard.module.css";
 
 const DraftPostCard = ({ post, onDelete, isDeleting }) => {
@@ -73,7 +73,7 @@ const DraftPostCard = ({ post, onDelete, isDeleting }) => {
 
         {post.image && (
             <div className={styles.thumb}>
-              {loading && <div className={styles.thumbLoading} />}
+              {loading && <div className={`skeleton ${styles.thumbLoading}`} />}
               {error && (
                   <span role="img" aria-label="Failed to load image">
               <ImageOff size={18} aria-hidden="true" />

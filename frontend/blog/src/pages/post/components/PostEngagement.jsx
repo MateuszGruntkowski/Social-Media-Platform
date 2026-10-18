@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Heart } from "lucide-react";
+import LikeButton from "../../../common/LikeButton/LikeButton.jsx";
 import styles from "../styles/PostEngagement.module.css";
 
 const PostEngagement = ({ post, onLikeToggle }) => {
@@ -14,28 +14,16 @@ const PostEngagement = ({ post, onLikeToggle }) => {
     }
   };
 
-  const likesCount = post.likesCount || 0;
-  const liked = !!post.isLikedByCurrentUser;
-
   return (
       <div className={styles.engagement}>
         <div className={styles.likesSection}>
-          <button
-              type="button"
-              onClick={handleLikeToggle}
-              className={`${styles.btnLike} ${liked ? styles.liked : ""}`}
+          <LikeButton
+              isLiked={!!post.isLikedByCurrentUser}
+              likesCount={post.likesCount || 0}
+              onLike={handleLikeToggle}
               disabled={likingPost}
-              title={liked ? "undo like" : "like post"}
-              aria-pressed={liked}
-              aria-label={`${liked ? "Undo like" : "Like post"}, ${likesCount} likes`}
-          >
-            <Heart
-                size={18}
-                fill={liked ? "currentColor" : "none"}
-                aria-hidden="true"
-            />
-            <span className={styles.likesCount}>{likesCount}</span>
-          </button>
+              size={18}
+          />
         </div>
       </div>
   );

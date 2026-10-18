@@ -26,41 +26,39 @@ const CategoriesAndTags = () => {
     };
 
     return (
-        <div className={styles.page}>
-            <main className={styles.inner}>
-                <div className={styles.tabs} role="tablist" aria-label="Categories and tags">
-                    {TABS.map((tab, index) => {
-                        const selected = tab === activeTab;
-                        return (
-                            <button
-                                key={tab}
-                                ref={(el) => (tabRefs.current[tab] = el)}
-                                type="button"
-                                role="tab"
-                                id={`tab-${tab}`}
-                                aria-selected={selected}
-                                aria-controls={selected ? "taxonomy-panel" : undefined}
-                                tabIndex={selected ? 0 : -1}
-                                className={`${styles.tab} ${selected ? styles.tabActive : ""}`}
-                                onClick={() => selectTab(tab)}
-                                onKeyDown={(e) => handleKeyDown(e, index)}
-                            >
-                                {TAXONOMY[tab].label}
-                            </button>
-                        );
-                    })}
-                </div>
+        <main className="page">
+            <div className={styles.tabs} role="tablist" aria-label="Categories and tags">
+                {TABS.map((tab, index) => {
+                    const selected = tab === activeTab;
+                    return (
+                        <button
+                            key={tab}
+                            ref={(el) => (tabRefs.current[tab] = el)}
+                            type="button"
+                            role="tab"
+                            id={`tab-${tab}`}
+                            aria-selected={selected}
+                            aria-controls={selected ? "taxonomy-panel" : undefined}
+                            tabIndex={selected ? 0 : -1}
+                            className={`${styles.tab} ${selected ? styles.tabActive : ""}`}
+                            onClick={() => selectTab(tab)}
+                            onKeyDown={(e) => handleKeyDown(e, index)}
+                        >
+                            {TAXONOMY[tab].label}
+                        </button>
+                    );
+                })}
+            </div>
 
-                <div
-                    role="tabpanel"
-                    id="taxonomy-panel"
-                    aria-labelledby={`tab-${activeTab}`}
-                >
-                    {/* key remounts the panel on tab switch, so the two lists never mix */}
-                    <TaxonomyPanel key={activeTab} config={TAXONOMY[activeTab]} />
-                </div>
-            </main>
-        </div>
+            <div
+                role="tabpanel"
+                id="taxonomy-panel"
+                aria-labelledby={`tab-${activeTab}`}
+            >
+                {/* key remounts the panel on tab switch, so the two lists never mix */}
+                <TaxonomyPanel key={activeTab} config={TAXONOMY[activeTab]} />
+            </div>
+        </main>
     );
 };
 

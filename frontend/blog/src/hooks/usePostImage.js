@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import apiService from "../../../services/apiService";
+import apiService from "../services/apiService.jsx";
 
 export const usePostImage = (image) => {
     const [src, setSrc] = useState(null);

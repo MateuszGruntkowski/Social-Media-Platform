@@ -20,14 +20,14 @@ const TaxonomyList = ({
     if (loading) {
         return (
             <div aria-busy="true">
-        <span className={styles.srOnly} role="status">
+        <span className="sr-only" role="status">
           Loading {config.plural}…
         </span>
                 <ul className={styles.list} aria-hidden="true">
                     {[0, 1, 2].map((i) => (
                         <li key={i} className={styles.skeletonRow}>
-                            <div className={styles.skeletonName} />
-                            <div className={styles.skeletonCount} />
+                            <div className={`skeleton ${styles.skeletonName}`} />
+                            <div className={`skeleton ${styles.skeletonCount}`} />
                         </li>
                     ))}
                 </ul>
@@ -37,8 +37,8 @@ const TaxonomyList = ({
 
     if (loadFailed) {
         return (
-            <div className={styles.empty}>
-                <p>Couldn't load {config.plural}.</p>
+            <div className={styles.empty} role="alert">
+                <p>{config.messages.load}</p>
                 <button type="button" className={styles.retry} onClick={onRetry}>
                     Try again
                 </button>

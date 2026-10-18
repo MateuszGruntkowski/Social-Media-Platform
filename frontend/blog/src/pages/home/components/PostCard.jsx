@@ -1,67 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, MessageCircle } from "lucide-react";
-import { formatDate } from "../../../utils/formatDate.js";
-import LikeButton from "./LikeButton";
-import apiService from "../../../services/apiService";
+import { formatDate } from "../../../utils/formatDate";
+import { getExcerpt } from "../../../utils/getExcerpt";
+import { usePostImage } from "../../../hooks/usePostImage.js";
+import LikeButton from "../../../common/LikeButton/LikeButton.jsx";
 import styles from "../styles/PostCard.module.css";
 
 const PostCard = ({ post, onLikeToggle, likingPost, user }) => {
   const navigate = useNavigate();
-  const [imageData, setImageData] = useState(null);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const {
+    src: imageSrc,
+    loading: imageLoading,
+    error: imageError,
+  } = usePostImage(post.image);
 
-  // Load image data if post has an image
-  useEffect(() => {
-    if (!post.image?.id) return;
-
-    let cancelled = false;
-    let objectUrl = null;
-
-    const loadImage = async () => {
-      try {
-        setImageLoading(true);
-        setImageError(false);
-        const imageBlob = await apiService.getPostImage(post.image.id);
-        if (cancelled) return;
-        objectUrl = URL.createObjectURL(
-            new Blob([imageBlob], {
-              type: post.image.contentType,
-            })
-        );
-        setImageData(objectUrl);
-      } catch (error) {
-        console.error("Error loading image:", error);
-        if (!cancelled) setImageError(true);
-      } finally {
-        if (!cancelled) setImageLoading(false);
-      }
-    };
-
-    loadImage();
-
-    // Revoke the object URL created by this effect run
-    return () => {
-      cancelled = true;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, [post.image?.id]);
-
-  const renderPostContent = (content) => {
-    const truncatedContent =
-        content.length > 200 ? content.substring(0, 200) + "..." : content;
-    return { __html: truncatedContent };
-  };
+  const excerpt = useMemo(() => getExcerpt(post.content), [post.content]);
 
   const getReadingTimeText = (minutes) => `${minutes} min read`;
 
-  const handleLikeClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const handleLikeClick = () => {
     if (!user) {
       navigate("/auth");
       return;
@@ -85,7 +43,7 @@ const PostCard = ({ post, onLikeToggle, likingPost, user }) => {
           <header className={styles.meta}>
             <span className={styles.author}>{authorName}</span>
             <time dateTime={post.createdAt}>{formatDate(post.createdAt)}</time>
-            {post.readingTime && (
+            {post.readingTime > 0 && (
                 <span>{getReadingTimeText(post.readingTime)}</span>
             )}
           </header>
@@ -98,25 +56,22 @@ const PostCard = ({ post, onLikeToggle, likingPost, user }) => {
           </h2>
 
           {/* Excerpt */}
-          {post.content && (
-              <div
-                  className={styles.excerpt}
-                  dangerouslySetInnerHTML={renderPostContent(post.content)}
-              />
-          )}
+          {excerpt && <p className={styles.excerpt}>{excerpt}</p>}
 
           {/* Image */}
           {post.image && (
               <div className={styles.image}>
-                {imageLoading && <div className={styles.imageLoading} />}
+                {imageLoading && (
+                    <div className={`skeleton ${styles.imageLoading}`} />
+                )}
                 {imageError && (
                     <div className={styles.imageError}>
                       <span>Couldn't load image</span>
                     </div>
                 )}
-                {imageData && !imageLoading && !imageError && (
+                {imageSrc && !imageLoading && !imageError && (
                     <img
-                        src={imageData}
+                        src={imageSrc}
                         alt={post.image.fileName || post.title}
                         className={styles.imageEl}
                         loading="lazy"

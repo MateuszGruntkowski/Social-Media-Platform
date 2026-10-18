@@ -7,15 +7,15 @@ import NoPostsMessage from "./NoPostsMessage";
 import styles from "../styles/Home.module.css";
 
 const FeedSkeleton = () => (
-    <div className={styles.skeletonList} aria-hidden="true">
+    <div aria-hidden="true">
       {[0, 1, 2].map((i) => (
-          <div key={i} className={styles.skeleton}>
-            <div className={styles.skeletonAvatar} />
+          <div key={i} className={styles.skeletonRow}>
+            <div className={`skeleton ${styles.skeletonAvatar}`} />
             <div className={styles.skeletonBody}>
-              <div className={`${styles.skeletonLine} ${styles.w40}`} />
-              <div className={`${styles.skeletonLine} ${styles.w80}`} />
-              <div className={`${styles.skeletonLine} ${styles.w100}`} />
-              <div className={`${styles.skeletonLine} ${styles.w60}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w40}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w80}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w100}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w60}`} />
             </div>
           </div>
       ))}
@@ -29,9 +29,11 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [loading, setLoading] = useState(true);
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [error, setError] = useState(false);
   const [likingPost, setLikingPost] = useState(null);
+  // Bumped by "Try again" to re-run both loading effects
+  const [reloadKey, setReloadKey] = useState(0);
 
   const { user } = useAuth();
 
@@ -55,48 +57,67 @@ const Home = () => {
     }
   };
 
+  // Categories and tags don't change when a filter is clicked, so they are
+  // loaded once (and again only on retry).
   useEffect(() => {
-    loadData();
-  }, [selectedCategory, selectedTag]);
+    let cancelled = false;
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(false);
-      const [postsData, categoriesData, tagsData] = await Promise.all([
-        apiService.getPosts({
+    const loadFilters = async () => {
+      try {
+        const [categoriesData, tagsData] = await Promise.all([
+          apiService.getCategories(),
+          apiService.getTags(),
+        ]);
+        if (cancelled) return;
+        setCategories(categoriesData);
+        setTags(tagsData);
+      } catch (err) {
+        console.error("Error loading filters:", err);
+      } finally {
+        if (!cancelled) setFiltersLoaded(true);
+      }
+    };
+
+    loadFilters();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
+
+  // The cleanup flag drops responses to superseded requests, so a slow
+  // earlier filter can't overwrite the result of a later one.
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const postsData = await apiService.getPosts({
           ...(selectedCategory && { categoryId: selectedCategory }),
           ...(selectedTag && { tagId: selectedTag }),
-        }),
-        apiService.getCategories(),
-        apiService.getTags(),
-      ]);
+        });
+        if (cancelled) return;
+        setPosts(postsData.filter((post) => post.status === "PUBLISHED"));
+      } catch (err) {
+        console.error("Error loading posts:", err);
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
 
-      setPosts(postsData.filter((post) => post.status === "PUBLISHED"));
-      setCategories(categoriesData);
-      setTags(tagsData);
-    } catch (err) {
-      console.error("Error loading data:", err);
-      setError(true);
-    } finally {
-      setLoading(false);
-      setHasLoaded(true);
-    }
-  };
-
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
-  };
-
-  const handleTagChange = (tagId) => {
-    setSelectedTag(tagId);
-  };
+    loadPosts();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory, selectedTag, reloadKey]);
 
   const renderFeed = () => {
     if (loading) {
       return (
           <>
-          <span className={styles.srOnly} role="status">
+          <span className="sr-only" role="status">
             Loading posts…
           </span>
             <FeedSkeleton />
@@ -109,7 +130,11 @@ const Home = () => {
           <div className={styles.state} role="alert">
             <p className={styles.stateTitle}>Couldn't load posts</p>
             <p className={styles.stateText}>Check your connection and try again.</p>
-            <button type="button" className={styles.retry} onClick={loadData}>
+            <button
+                type="button"
+                className={styles.retry}
+                onClick={() => setReloadKey((key) => key + 1)}
+            >
               Try again
             </button>
           </div>
@@ -131,26 +156,22 @@ const Home = () => {
   };
 
   return (
-      <div className={styles.page}>
-        <main className={styles.home}>
-          <h1 className={styles.srOnly}>Home feed</h1>
+      <main className="page">
+        <h1 className="sr-only">Home feed</h1>
 
-          {hasLoaded && (
-              <PostFilters
-                  categories={categories}
-                  tags={tags}
-                  selectedCategory={selectedCategory}
-                  selectedTag={selectedTag}
-                  onCategoryChange={handleCategoryChange}
-                  onTagChange={handleTagChange}
-              />
-          )}
+        {filtersLoaded && (
+            <PostFilters
+                categories={categories}
+                tags={tags}
+                selectedCategory={selectedCategory}
+                selectedTag={selectedTag}
+                onCategoryChange={setSelectedCategory}
+                onTagChange={setSelectedTag}
+            />
+        )}
 
-          <div className={styles.feed} aria-busy={loading}>
-            {renderFeed()}
-          </div>
-        </main>
-      </div>
+        <div aria-busy={loading}>{renderFeed()}</div>
+      </main>
   );
 };
 

@@ -1,18 +1,8 @@
+/* CommentForm.module.css — self-contained, no global .form-* / .btn classes */
+
 .formWrapper {
   padding: 0.25rem 0 1rem;
   border-bottom: 1px solid #e7e5dc;
-}
-
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
 }
 
 .form {

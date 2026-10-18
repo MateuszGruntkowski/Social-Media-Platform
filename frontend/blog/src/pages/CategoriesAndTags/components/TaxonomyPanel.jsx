@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TaxonomyForm from "./TaxonomyForm";
 import TaxonomyList from "./TaxonomyList";
 import styles from "../styles/TaxonomyPanel.module.css";
@@ -9,11 +9,7 @@ const TaxonomyPanel = ({ config }) => {
     const [loadFailed, setLoadFailed] = useState(false);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        loadItems();
-    }, []);
-
-    const loadItems = async () => {
+    const loadItems = useCallback(async () => {
         try {
             setLoading(true);
             setLoadFailed(false);
@@ -21,13 +17,16 @@ const TaxonomyPanel = ({ config }) => {
             const data = await config.load();
             setItems(data);
         } catch (err) {
-            setError(config.messages.load);
             setLoadFailed(true);
             console.error("Error:", err);
         } finally {
             setLoading(false);
         }
-    };
+    }, [config]);
+
+    useEffect(() => {
+        loadItems();
+    }, [loadItems]);
 
     const handleAdd = async (names) => {
         try {
@@ -62,7 +61,7 @@ const TaxonomyPanel = ({ config }) => {
 
             <TaxonomyForm config={config} onAdd={handleAdd} />
 
-            {error && !loadFailed && (
+            {error && (
                 <p className={styles.error} role="alert">
                     {error}
                 </p>

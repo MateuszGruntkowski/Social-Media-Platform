@@ -35,7 +35,7 @@ const CommentForm = ({ postId, onCommentAdded }) => {
 
   return (
       <div className={styles.formWrapper}>
-        <h3 className={styles.srOnly}>Add comment</h3>
+        <h3 className="sr-only">Add comment</h3>
         <form onSubmit={handleCommentSubmit} className={styles.form}>
         <textarea
             value={commentContent}
