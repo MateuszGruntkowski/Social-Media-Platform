@@ -1,0 +1,102 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #252821;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* A <label> styled as a button; the file input is visually hidden */
+.pick {
+    display: inline-flex;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e7e5dc;
+    border-radius: 8px;
+    color: #252821;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.pick:hover {
+    border-color: #d3d0c3;
+}
+
+.controls:has(input:focus-visible) .pick {
+    outline: 2px solid #737b59;
+    outline-offset: 2px;
+}
+
+.hint,
+.note {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #77786a;
+}
+
+.error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #a0473a;
+}
+
+.preview {
+    max-width: 300px;
+    border: 1px solid #e7e5dc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.remove,
+.undo {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #a0473a;
+    cursor: pointer;
+}
+
+.undo {
+    color: #252821;
+}
+
+.remove:hover,
+.undo:hover {
+    text-decoration: underline;
+}
+
+.remove:focus-visible,
+.undo:focus-visible {
+    outline: 2px solid #737b59;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+    .preview {
+        max-width: 100%;
+    }
+}

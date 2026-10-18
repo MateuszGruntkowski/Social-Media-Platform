@@ -1,41 +1,32 @@
-.tagCheckbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: 2px solid rgba(102, 126, 234, 0.1);
-  border-radius: 15px;
+.tag {
   cursor: pointer;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid #e7e5dc;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #77786a;
+  transition: color 0.15s ease, border-color 0.15s ease,
+  background-color 0.15s ease;
+}
+
+.tag:hover .chip {
+  color: #252821;
+  border-color: #d3d0c3;
+}
+
+.tag input:checked + .chip {
+  color: #252821;
+  border-color: #737b59;
+  background: #efede4;
   font-weight: 500;
-  color: #2c3e50;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
 }
 
-.tagCheckbox:hover {
-  background: rgba(102, 126, 234, 0.1);
-  border-color: #667eea;
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
-}
-
-.tagCheckbox input {
-  margin: 0;
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-.tagCheckbox input:checked + span {
-  color: #667eea;
-  font-weight: 600;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .tagCheckbox {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
-  }
+.tag input:focus-visible + .chip {
+  outline: 2px solid #737b59;
+  outline-offset: 2px;
 }
