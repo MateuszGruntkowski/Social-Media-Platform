@@ -1,44 +1,31 @@
-.editorToolbar {
+.toolbar {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding: 1rem;
-  background: rgba(248, 249, 250, 0.8);
-  backdrop-filter: blur(5px);
-  border-radius: 15px 15px 0 0;
-  border: 2px solid rgba(102, 126, 234, 0.1);
-  border-bottom: none;
+  gap: 0.25rem;
+  padding: 0.375rem;
+  border-bottom: 1px solid #e7e5dc;
 }
 
-.editorToolbar button {
-  padding: 0.75rem 1rem;
-  border: none;
-  background: white;
-  border-radius: 10px;
-  cursor: pointer;
+.button {
+  min-width: 2rem;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #77786a;
+  font: inherit;
+  font-size: 0.8125rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #2c3e50;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-.editorToolbar button:hover {
-  background: #667eea;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+.button:hover {
+  background: #efede4;
+  color: #252821;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .editorToolbar {
-    padding: 0.75rem;
-    flex-wrap: wrap;
-  }
-
-  .editorToolbar button {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
+.button:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: -2px;
 }

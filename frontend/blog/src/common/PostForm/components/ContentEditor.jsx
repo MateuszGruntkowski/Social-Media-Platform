@@ -1,56 +1,74 @@
-import React, { useRef } from "react";
+import React, { useId, useLayoutEffect, useRef } from "react";
 import EditorToolbar from "./EditorToolbar";
 import styles from "../styles/ContentEditor.module.css";
 
 const ContentEditor = ({ content, onContentChange }) => {
-  const contentTextareaRef = useRef(null);
+  const textareaRef = useRef(null);
+  const pendingSelection = useRef(null);
+  const id = useId();
 
-  const handleInputChange = (e) => {
-    onContentChange(e.target.value);
-  };
+  // The controlled textarea resets the caret when its value changes, so the
+  // selection is applied after React has committed the new content.
+  useLayoutEffect(() => {
+    if (pendingSelection.current && textareaRef.current) {
+      const [start, end] = pendingSelection.current;
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(start, end);
+      pendingSelection.current = null;
+    }
+  }, [content]);
 
-  // Insert formatting in textarea
-  const insertFormatting = (before, after = "") => {
-    const textarea = contentTextareaRef.current;
+  const handleFormat = ({ before, after = "", line }) => {
+    const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = content.substring(start, end);
+    const { selectionStart, selectionEnd } = textarea;
 
-    const newText =
-      content.substring(0, start) +
-      before +
-      selectedText +
-      after +
-      content.substring(end);
+    if (line) {
+      const lineStart = content.lastIndexOf("\n", selectionStart - 1) + 1;
+      pendingSelection.current = [
+        selectionStart + before.length,
+        selectionEnd + before.length,
+      ];
+      onContentChange(
+          content.slice(0, lineStart) + before + content.slice(lineStart)
+      );
+      return;
+    }
 
-    onContentChange(newText);
-
-    setTimeout(() => {
-      textarea.focus();
-      const newCursorPos =
-        start + before.length + selectedText.length + after.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos);
-    }, 0);
+    const selected = content.slice(selectionStart, selectionEnd);
+    pendingSelection.current = [
+      selectionStart + before.length,
+      selectionStart + before.length + selected.length,
+    ];
+    onContentChange(
+        content.slice(0, selectionStart) +
+        before +
+        selected +
+        after +
+        content.slice(selectionEnd)
+    );
   };
 
   return (
-    <div className={`form-group ${styles.fullWidth}`}>
-      <label className="form-label">Content</label>
-      <div className={styles.editorContainer}>
-        <EditorToolbar onFormatting={insertFormatting} />
-        <textarea
-          ref={contentTextareaRef}
-          name="content"
-          className={`form-textarea ${styles.contentTextarea}`}
-          value={content}
-          onChange={handleInputChange}
-          placeholder="Write your post content here..."
-          required
-        />
+      <div className={styles.field}>
+        <label className={styles.label} htmlFor={id}>
+          Content
+        </label>
+        <div className={styles.editor}>
+          <EditorToolbar onFormat={handleFormat} />
+          <textarea
+              id={id}
+              ref={textareaRef}
+              className={styles.textarea}
+              name="content"
+              value={content}
+              onChange={(e) => onContentChange(e.target.value)}
+              placeholder="Write your post here. Markdown is supported."
+              required
+          />
+        </div>
       </div>
-    </div>
   );
 };
 

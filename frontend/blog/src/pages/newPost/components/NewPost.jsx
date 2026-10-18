@@ -1,108 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiService from "../../../services/apiService";
-import PostForm from "./PostForm";
-import styles from "../styles/NewPost.module.css";
+import PostForm from "../../../common/PostForm/components/PostForm";
+import { useCategoriesAndTags } from "../../../common/PostForm/hooks/useCategoryAndTags.js";
+import {
+  buildPostRequest,
+  createEmptyForm,
+  validatePostForm,
+} from "../../../common/PostForm/utils/postFormData";
+import styles from "../../../common/PostForm/styles/PostEditorPage.module.css";
 
 const NewPost = () => {
   const navigate = useNavigate();
+  const options = useCategoriesAndTags();
+  const [formData, setFormData] = useState(createEmptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    status: "DRAFT",
-    categoryId: "",
-    tagIds: new Set(),
-    image: null,
-  });
-
-  const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [categoriesData, tagsData] = await Promise.all([
-          apiService.getCategories(),
-          apiService.getTags(),
-        ]);
-        setCategories(categoriesData);
-        setTags(tagsData);
-      } catch (error) {
-        console.error("Error loading data", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const handleChange = (patch) =>
+      setFormData((prev) => ({ ...prev, ...patch }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+
+    const validationError = validatePostForm(formData);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
     try {
-      const submitData = new FormData();
-
-      const postData = {
-        title: formData.title,
-        content: formData.content,
-        status: formData.status,
-        categoryId: formData.categoryId || null,
-        tagIds: Array.from(formData.tagIds),
-      };
-
-      submitData.append(
-        "post",
-        new Blob([JSON.stringify(postData)], {
-          type: "application/json",
-        })
-      );
-
-      if (formData.image) {
-        submitData.append("image", formData.image);
-      }
-
-      await apiService.createPost(submitData);
+      await apiService.createPost(buildPostRequest(formData));
       navigate("/");
     } catch (err) {
       console.error("Error creating post:", err);
       setError(err.response?.data?.message || "Error saving the post");
-    } finally {
       setSubmitting(false);
     }
   };
 
-  const handleCancel = () => navigate("/");
-
-  const handleFormDataChange = (newData) => {
-    setFormData(newData);
-  };
-
-  const handleError = (errorMessage) => {
-    setError(errorMessage);
-  };
-
   return (
-    <div className="container">
-      <div className={styles.container}>
-        <h1 className={styles.title}>New post</h1>
+      <main className="page">
+        <header className={styles.header}>
+          <h1 className={styles.title}>New Post</h1>
+          <p className={styles.description}>Create a new post for your audience.</p>
+        </header>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+        )}
 
         <PostForm
-          formData={formData}
-          onFormDataChange={handleFormDataChange}
-          categories={categories}
-          tags={tags}
-          submitting={submitting}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          onError={handleError}
+            formData={formData}
+            onChange={handleChange}
+            categories={options.categories}
+            tags={options.tags}
+            optionsFailed={options.failed}
+            submitting={submitting}
+            submitLabel="Create post"
+            onSubmit={handleSubmit}
+            onCancel={() => navigate("/")}
         />
-      </div>
-    </div>
+      </main>
   );
 };
 

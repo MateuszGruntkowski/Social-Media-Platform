@@ -1,0 +1,87 @@
+.form {
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #e7e5dc;
+}
+
+.label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #77786a;
+}
+
+.row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #e7e5dc;
+    border-radius: 8px;
+    background: #fcfbf8;
+    color: #252821;
+    font: inherit;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input::placeholder {
+    color: #77786a;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #737b59;
+    box-shadow: 0 0 0 1px #737b59;
+}
+
+.input:disabled {
+    opacity: 0.6;
+}
+
+.submit {
+    flex-shrink: 0;
+    padding: 0.55rem 1rem;
+    border: 0;
+    border-radius: 8px;
+    background: #737b59;
+    color: #ffffff;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.submit:hover:not(:disabled) {
+    background: #636a4a;
+}
+
+.submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.submit:focus-visible {
+    outline: 2px solid #737b59;
+    outline-offset: 2px;
+}
+
+.help {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: #77786a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .input,
+    .submit {
+        transition: none;
+    }
+}

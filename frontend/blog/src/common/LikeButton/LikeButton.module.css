@@ -1,0 +1,55 @@
+/* LikeButton.module.css */
+
+.likeButton {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 32px;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #77786a;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.likeButton:hover {
+  color: #252821;
+  background: rgba(115, 123, 89, 0.14);
+}
+
+.likeButton:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: 1px;
+}
+
+.likeButton.liked {
+  color: #737b59;
+}
+
+.likeButton.liked .likesCount {
+  color: #252821;
+}
+
+.likeButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.likesCount {
+  min-width: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .likeButton {
+    transition: none;
+  }
+}

@@ -1,69 +1,91 @@
+/* CommentForm.module.css — self-contained, no global .form-* / .btn classes */
+
 .formWrapper {
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  transition: all 0.3s ease;
-}
-
-.formWrapper:hover {
-  background: rgba(102, 126, 234, 0.08);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.1);
-}
-
-.formTitle {
-  color: #2c3e50;
-  font-size: 1.3rem;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
+  padding: 0.25rem 0 1rem;
+  border-bottom: 1px solid #e7e5dc;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-}
-
-.editor {
-  position: relative;
+  gap: 0.75rem;
 }
 
 .textarea {
-  min-height: 120px !important;
+  display: block;
+  width: 100%;
+  min-height: 88px;
+  padding: 0.75rem;
+  border: 1px solid #e7e5dc;
+  border-radius: 8px;
+  background: #fcfbf8;
+  color: #252821;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   resize: vertical;
-  border: 2px solid rgba(102, 126, 234, 0.2) !important;
-  border-radius: 15px !important;
-  padding: 1rem !important;
-  font-size: 1rem;
-  line-height: 1.6;
-  transition: all 0.3s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.textarea::placeholder {
+  color: #77786a;
 }
 
 .textarea:focus {
-  border-color: #667eea !important;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
-  background: white !important;
-  transform: translateY(-1px);
+  outline: none;
+  border-color: #737b59;
+  box-shadow: 0 0 0 1px #737b59;
+}
+
+.textarea:disabled {
+  opacity: 0.6;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #a0473a;
 }
 
 .formActions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .formWrapper {
-    padding: 1.5rem;
-  }
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  border: 0;
+  border-radius: 8px;
+  background: #737b59;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-@media (max-width: 480px) {
-  .formWrapper {
-    padding: 1rem;
+.submit:hover:not(:disabled) {
+  background: #636a4a;
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.submit:focus-visible {
+  outline: 2px solid #737b59;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textarea,
+  .submit {
+    transition: none;
   }
 }
