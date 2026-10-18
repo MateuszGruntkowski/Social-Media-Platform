@@ -2,13 +2,28 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import apiService from "../../../services/apiService";
-import { ArrowLeft } from "lucide-react";
 
 import PostNavigation from "./PostNavigation";
 import PostArticle from "./PostArticle";
 import PostComments from "./PostComments";
-// import styles from "../styles/Post.module.css";
 import styles from "../styles/Post.module.css";
+
+const PostSkeleton = () => (
+    <div className={styles.skeletonPost} aria-hidden="true">
+      <div className={styles.skeletonAuthor}>
+        <div className={`skeleton ${styles.skeletonAvatar}`} />
+        <div className={styles.skeletonMeta}>
+          <div className={`skeleton ${styles.skeletonLine} ${styles.w30}`} />
+          <div className={`skeleton ${styles.skeletonLine} ${styles.w20}`} />
+        </div>
+      </div>
+      <div className={`skeleton ${styles.skeletonLine} ${styles.skeletonTitle}`} />
+      <div className={`skeleton ${styles.skeletonLine} ${styles.w100}`} />
+      <div className={`skeleton ${styles.skeletonLine} ${styles.w100}`} />
+      <div className={`skeleton ${styles.skeletonLine} ${styles.w80}`} />
+      <div className={`skeleton ${styles.skeletonLine} ${styles.w60}`} />
+    </div>
+);
 
 const Post = () => {
   const { id } = useParams();
@@ -19,39 +34,54 @@ const Post = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [commentsLoading, setCommentsLoading] = useState(true);
+  const [commentsError, setCommentsError] = useState(false);
   const [error, setError] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
   const [deletingPost, setDeletingPost] = useState(false);
 
+  // The cleanup flag drops responses that arrive after the user has moved
+  // on to another post.
   useEffect(() => {
+    let cancelled = false;
+
+    const loadPost = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        setDeleteError("");
+        setPost(null);
+        const postData = await apiService.getPost(id);
+        if (!cancelled) setPost(postData);
+      } catch (err) {
+        console.error("Error loading post:", err);
+        if (!cancelled) setError("Failed to load post.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    const loadComments = async () => {
+      try {
+        setCommentsLoading(true);
+        setCommentsError(false);
+        setComments([]);
+        const commentsData = await apiService.getComments(id);
+        if (!cancelled) setComments(commentsData);
+      } catch (err) {
+        console.error("Error loading comments:", err);
+        if (!cancelled) setCommentsError(true);
+      } finally {
+        if (!cancelled) setCommentsLoading(false);
+      }
+    };
+
     loadPost();
     loadComments();
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
-
-  const loadPost = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const postData = await apiService.getPost(id);
-      setPost(postData);
-    } catch (err) {
-      console.error("Error loading post:", err);
-      setError("Failed to load post.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadComments = async () => {
-    try {
-      setCommentsLoading(true);
-      const commentsData = await apiService.getComments(id);
-      setComments(commentsData);
-    } catch (err) {
-      console.error("Error loading comments:", err);
-    } finally {
-      setCommentsLoading(false);
-    }
-  };
 
   const handleLikeToggle = async () => {
     if (!user) {
@@ -61,7 +91,10 @@ const Post = () => {
 
     try {
       const updatedPost = await apiService.togglePostLike(id);
-      setPost(updatedPost);
+      // The user may have moved to another post while the request was running
+      setPost((prev) =>
+          prev && String(prev.id) === String(updatedPost.id) ? updatedPost : prev
+      );
     } catch (err) {
       console.error("Error toggling like:", err);
     }
@@ -74,83 +107,86 @@ const Post = () => {
 
     try {
       setDeletingPost(true);
+      setDeleteError("");
       await apiService.deletePost(id);
       navigate("/");
     } catch (err) {
       console.error("Error deleting post:", err);
-      setError("Failed to delete post.");
+      // Not setError: that would replace the whole post with an error page
+      setDeleteError("Failed to delete post.");
     } finally {
       setDeletingPost(false);
     }
   };
 
   const handleCommentAdded = (newComment) => {
-    setComments([newComment, ...comments]);
+    setComments((prev) => [newComment, ...prev]);
   };
 
   const handleCommentDeleted = (commentId) => {
-    setComments(comments.filter((comment) => comment.id !== commentId));
+    setComments((prev) => prev.filter((comment) => comment.id !== commentId));
   };
 
   const canDeletePost = () => {
     if (!user || !post) return false;
-    return isAdmin() || post.author.id === getUserId();
+    return (
+        isAdmin() || (post.author?.id != null && post.author.id === getUserId())
+    );
   };
 
-  if (loading) {
-    return (
-      <div className="container">
-        <div className="loading">Loading post...</div>
-      </div>
-    );
-  }
+  const renderBody = () => {
+    if (loading) {
+      return (
+          <>
+          <span className="sr-only" role="status">
+            Loading post…
+          </span>
+            <PostSkeleton />
+          </>
+      );
+    }
 
-  if (error) {
-    return (
-      <div className="container">
-        <div className="alert alert-error">{error}</div>
-        <button onClick={() => navigate(-1)} className="btn btn-secondary">
-          <ArrowLeft size={16} />
-          Back
-        </button>
-      </div>
-    );
-  }
+    if (error || !post) {
+      return (
+          <div className={styles.errorState} role="alert">
+            <p className={styles.errorTitle}>{error || "Post not found"}</p>
+          </div>
+      );
+    }
 
-  if (!post) {
     return (
-      <div className="container">
-        <div className="alert alert-error">Post not found</div>
-        <button onClick={() => navigate(-1)} className="btn btn-secondary">
-          <ArrowLeft size={16} />
-          Back
-        </button>
-      </div>
+        <>
+          {deleteError && (
+              <p className={styles.deleteError} role="alert">
+                {deleteError}
+              </p>
+          )}
+
+          <PostArticle post={post} onLikeToggle={handleLikeToggle} />
+
+          <PostComments
+              comments={comments}
+              commentsLoading={commentsLoading}
+              commentsError={commentsError}
+              postId={id}
+              user={user}
+              onCommentAdded={handleCommentAdded}
+              onCommentDeleted={handleCommentDeleted}
+          />
+        </>
     );
-  }
+  };
 
   return (
-    <div className="container">
-      <div className={styles.page}>
+      <main className="page">
         <PostNavigation
-          onGoBack={() => navigate(-1)}
-          canDelete={canDeletePost()}
-          onDelete={handleDeletePost}
-          isDeleting={deletingPost}
+            onGoBack={() => navigate(-1)}
+            canDelete={!loading && canDeletePost()}
+            onDelete={handleDeletePost}
+            isDeleting={deletingPost}
         />
-
-        <PostArticle post={post} onLikeToggle={handleLikeToggle} />
-
-        <PostComments
-          comments={comments}
-          commentsLoading={commentsLoading}
-          postId={id}
-          user={user}
-          onCommentAdded={handleCommentAdded}
-          onCommentDeleted={handleCommentDeleted}
-        />
-      </div>
-    </div>
+        {renderBody()}
+      </main>
   );
 };
 

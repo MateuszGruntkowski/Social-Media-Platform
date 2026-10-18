@@ -1,15 +1,53 @@
-.fullWidth {
-  grid-column: 1 / -1;
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
 }
 
-/* Editor */
-.editorContainer {
-  position: relative;
+.label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #252821;
 }
 
-.contentTextarea {
-  border-radius: 0 0 15px 15px !important;
-  border-top: none !important;
-  min-height: 300px;
-  border: 2px solid rgba(102, 126, 234, 0.1) !important;
+/* One bordered box: toolbar on top, writing area below */
+.editor {
+  border: 1px solid #e7e5dc;
+  border-radius: 8px;
+  background: #fcfbf8;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.editor:focus-within {
+  border-color: #737b59;
+  box-shadow: 0 0 0 1px #737b59;
+}
+
+.textarea {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  padding: 0.75rem;
+  border: 0;
+  background: transparent;
+  color: #252821;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.textarea::placeholder {
+  color: #77786a;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+@media (max-width: 600px) {
+  .textarea {
+    min-height: 240px;
+  }
 }

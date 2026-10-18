@@ -1,158 +1,149 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import apiService from "../../services/apiService";
-import "./Auth.css";
+import styles from "./Auth.module.css";
+
+const getErrorMessage = (err) => {
+  const { response } = err;
+  if (!response) return "Network error or server is unreachable";
+  if (response.data?.message) return response.data.message;
+  if (response.status === 401) return "Invalid email or password";
+  if (response.status === 400) return "Invalid data provided";
+  return `Server error (${response.status})`;
+};
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "", name: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const idPrefix = useId();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError("");
 
+    const email = formData.email.trim();
     try {
-      let response;
-      if (isLogin) {
-        response = await apiService.login({
-          email: formData.email,
-          password: formData.password,
-        });
-      } else {
-        response = await apiService.register({
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-        });
-      }
+      const response = isLogin
+          ? await apiService.login({ email, password: formData.password })
+          : await apiService.register({
+            email,
+            password: formData.password,
+            name: formData.name.trim(),
+          });
 
       login(response);
       navigate("/");
     } catch (err) {
-      let errorMessage = "Error occurred";
-
-      if (err.response?.status === 401) {
-        errorMessage =
-          err.response.data?.message || "Invalid email or password";
-        console.log(err.response.data);
-      } else if (err.response?.status === 400) {
-        errorMessage = err.response.data?.message || "Invalid data provided";
-        console.log(err);
-      } else if (err.response) {
-        errorMessage =
-          err.response.data?.message ||
-          `Server error: (${err.response.status})`;
-        console.log(err.response.data?.message);
-      } else {
-        errorMessage = "Network error or server is unreachable";
-      }
-
-      setError(errorMessage);
-    } finally {
+      setError(getErrorMessage(err));
       setLoading(false);
     }
   };
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const switchMode = () => {
+    setIsLogin((prev) => !prev);
+    setError("");
+  };
+
+  const title = isLogin ? "Sign in" : "Sign up";
+
   return (
-    <div className="container">
-      <div className="auth-container">
-        <div className="auth-card">
-          <h2 className="auth-title">{isLogin ? "Sign in" : "Sign up"}</h2>
+      <main className="page">
+        <div className={styles.wrapper}>
+          <h1 className={styles.title}>{title}</h1>
+          <p className={styles.subtitle}>
+            {isLogin
+                ? "Welcome back. Sign in to like, comment and write posts."
+                : "Create an account to join the conversation."}
+          </p>
 
-          {error && <div className="alert alert-error">{error}</div>}
+          {error && (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+          )}
 
-          <form onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit}>
             {!isLogin && (
-              <div className="form-group">
-                <label className="form-label">Username</label>
-                <input
-                  type="text"
-                  name="name"
-                  className="form-input"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor={`${idPrefix}-name`}>
+                    Username
+                  </label>
+                  <input
+                      id={`${idPrefix}-name`}
+                      className={styles.input}
+                      type="text"
+                      name="name"
+                      autoComplete="username"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                  />
+                </div>
             )}
 
-            <div className="form-group">
-              <label className="form-label">Email</label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${idPrefix}-email`}>
+                Email
+              </label>
               <input
-                type="email"
-                name="email"
-                className="form-input"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
+                  id={`${idPrefix}-email`}
+                  className={styles.input}
+                  type="email"
+                  name="email"
+                  autoComplete={isLogin ? "username" : "email"}
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Password</label>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor={`${idPrefix}-password`}>
+                Password
+              </label>
               <input
-                type="password"
-                name="password"
-                className="form-input"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
+                  id={`${idPrefix}-password`}
+                  className={styles.input}
+                  type="password"
+                  name="password"
+                  autoComplete={isLogin ? "current-password" : "new-password"}
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
               />
             </div>
 
-            <button
-              type="submit"
-              className="btn btn-primary auth-submit-btn"
-              disabled={loading}
-            >
-              {loading ? "Loading..." : isLogin ? "Sign in" : "Sign up"}
+            <button className={styles.submit} type="submit" disabled={loading}>
+              {loading ? "Please wait…" : title}
             </button>
           </form>
 
-          <div className="auth-switch">
-            {isLogin ? (
-              <>
-                Don't have an account?{" "}
-                <span
-                  className="auth-switch-link"
-                  onClick={() => setIsLogin(false)}
-                >
-                  Sign up
-                </span>
-              </>
-            ) : (
-              <>
-                Do you already have an account?{" "}
-                <span
-                  className="auth-switch-link"
-                  onClick={() => setIsLogin(true)}
-                >
-                  Sign in
-                </span>
-              </>
-            )}
-          </div>
+          <p className={styles.switch}>
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+                className={styles.switchButton}
+                type="button"
+                onClick={switchMode}
+                disabled={loading}
+            >
+              {isLogin ? "Sign up" : "Sign in"}
+            </button>
+          </p>
         </div>
-      </div>
-    </div>
+      </main>
   );
 };
 

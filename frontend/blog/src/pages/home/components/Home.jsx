@@ -2,10 +2,25 @@ import React, { useState, useEffect } from "react";
 import apiService from "../../../services/apiService";
 import { useAuth } from "../../../context/AuthContext";
 import PostFilters from "./PostFilters";
-import PostList from "./PostList";
+import PostCard from "./PostCard";
 import NoPostsMessage from "./NoPostsMessage";
-// import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 import styles from "../styles/Home.module.css";
+
+const FeedSkeleton = () => (
+    <div aria-hidden="true">
+      {[0, 1, 2].map((i) => (
+          <div key={i} className={styles.skeletonRow}>
+            <div className={`skeleton ${styles.skeletonAvatar}`} />
+            <div className={styles.skeletonBody}>
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w40}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w80}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w100}`} />
+              <div className={`skeleton ${styles.skeletonLine} ${styles.w60}`} />
+            </div>
+          </div>
+      ))}
+    </div>
+);
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -14,7 +29,11 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [loading, setLoading] = useState(true);
+  const [filtersLoaded, setFiltersLoaded] = useState(false);
+  const [error, setError] = useState(false);
   const [likingPost, setLikingPost] = useState(null);
+  // Bumped by "Try again" to re-run both loading effects
+  const [reloadKey, setReloadKey] = useState(0);
 
   const { user } = useAuth();
 
@@ -27,9 +46,9 @@ const Home = () => {
       setLikingPost(postId);
       const updatedPost = await apiService.togglePostLike(postId);
       setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === updatedPost.id ? updatedPost : post
-        )
+          prevPosts.map((post) =>
+              post.id === updatedPost.id ? updatedPost : post
+          )
       );
     } catch (err) {
       console.error("Error toggling like:", err);
@@ -38,77 +57,126 @@ const Home = () => {
     }
   };
 
+  // Categories and tags don't change when a filter is clicked, so they are
+  // loaded once (and again only on retry).
   useEffect(() => {
-    loadData();
-  }, [selectedCategory, selectedTag]);
+    let cancelled = false;
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [postsData, categoriesData, tagsData] = await Promise.all([
-        apiService.getPosts({
+    const loadFilters = async () => {
+      try {
+        const [categoriesData, tagsData] = await Promise.all([
+          apiService.getCategories(),
+          apiService.getTags(),
+        ]);
+        if (cancelled) return;
+        setCategories(categoriesData);
+        setTags(tagsData);
+      } catch (err) {
+        console.error("Error loading filters:", err);
+      } finally {
+        if (!cancelled) setFiltersLoaded(true);
+      }
+    };
+
+    loadFilters();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadKey]);
+
+  // The cleanup flag drops responses to superseded requests, so a slow
+  // earlier filter can't overwrite the result of a later one.
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        const postsData = await apiService.getPosts({
           ...(selectedCategory && { categoryId: selectedCategory }),
           ...(selectedTag && { tagId: selectedTag }),
-        }),
-        apiService.getCategories(),
-        apiService.getTags(),
-      ]);
+        });
+        if (cancelled) return;
+        setPosts(postsData.filter((post) => post.status === "PUBLISHED"));
+      } catch (err) {
+        console.error("Error loading posts:", err);
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
 
-      setPosts(postsData.filter((post) => post.status === "PUBLISHED"));
-      setCategories(categoriesData);
-      setTags(tagsData);
-      console.log(postsData);
-    } catch (error) {
-      console.error("Error loading data:", error);
-    } finally {
-      setLoading(false);
+    loadPosts();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory, selectedTag, reloadKey]);
+
+  const renderFeed = () => {
+    if (loading) {
+      return (
+          <>
+          <span className="sr-only" role="status">
+            Loading posts…
+          </span>
+            <FeedSkeleton />
+          </>
+      );
     }
-  };
 
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
-  };
+    if (error) {
+      return (
+          <div className={styles.state} role="alert">
+            <p className={styles.stateTitle}>Couldn't load posts</p>
+            <p className={styles.stateText}>Check your connection and try again.</p>
+            <button
+                type="button"
+                className={styles.retry}
+                onClick={() => setReloadKey((key) => key + 1)}
+            >
+              Try again
+            </button>
+          </div>
+      );
+    }
 
-  const handleTagChange = (tagId) => {
-    setSelectedTag(tagId);
-  };
+    if (posts.length === 0) {
+      return <NoPostsMessage />;
+    }
 
-  if (loading) {
     return (
-      <div className="container">
-        <div className={styles.homeContainer}>{/* <LoadingSpinner /> */}</div>
-      </div>
+        <div className={styles.postList}>
+          {posts.map((post) => (
+              <PostCard
+                  key={post.id}
+                  post={post}
+                  onLikeToggle={handleLikeToggle}
+                  likingPost={likingPost}
+                  user={user}
+              />
+          ))}
+        </div>
     );
-  }
+  };
 
   return (
-    <div className="container">
-      <div className={styles.homeContainer}>
-        <aside className={styles.sidebar}>
-          <PostFilters
-            categories={categories}
-            tags={tags}
-            selectedCategory={selectedCategory}
-            selectedTag={selectedTag}
-            onCategoryChange={handleCategoryChange}
-            onTagChange={handleTagChange}
-          />
-        </aside>
+      <main className="page">
+        <h1 className="sr-only">Home feed</h1>
 
-        <main className={styles.contentArea}>
-          {posts.length === 0 ? (
-            <NoPostsMessage />
-          ) : (
-            <PostList
-              posts={posts}
-              onLikeToggle={handleLikeToggle}
-              likingPost={likingPost}
-              user={user}
+        {filtersLoaded && (
+            <PostFilters
+                categories={categories}
+                tags={tags}
+                selectedCategory={selectedCategory}
+                selectedTag={selectedTag}
+                onCategoryChange={setSelectedCategory}
+                onTagChange={setSelectedTag}
             />
-          )}
-        </main>
-      </div>
-    </div>
+        )}
+
+        <div aria-busy={loading}>{renderFeed()}</div>
+      </main>
   );
 };
 

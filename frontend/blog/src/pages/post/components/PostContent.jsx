@@ -1,85 +1,46 @@
-import React, { useState, useEffect } from "react";
-import apiService from "../../../services/apiService";
-import styles from "../styles/PostContent.module.css";
+import React, { useMemo } from "react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { usePostImage } from "../../../hooks/usePostImage.js";
+import styles from "../styles/PostContent.module.css";
 
-marked.setOptions({
-  breaks: true, // Converts \n to <br>
-  gfm: true, // GitHub Flavored Markdown
-});
+// breaks: newline -> <br>; gfm: GitHub Flavored Markdown.
+// Passed per call, not via marked.setOptions, so other markdown consumers
+// (e.g. getExcerpt) are not affected by this component being imported.
+const MARKED_OPTIONS = { breaks: true, gfm: true };
+
+const renderMarkdown = (markdown) =>
+    DOMPurify.sanitize(marked.parse(markdown || "", MARKED_OPTIONS));
 
 const PostContent = ({ post }) => {
-  const [imageData, setImageData] = useState(null);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const content = post.content;
-
-  const getMarkdownAsHtml = (markdown) => {
-    const html = marked.parse(markdown || "");
-    return DOMPurify.sanitize(html);
-  };
-
-  useEffect(() => {
-    const loadImage = async () => {
-      if (!post?.image?.id) return;
-
-      try {
-        setImageLoading(true);
-        setImageError(false);
-        const imageBlob = await apiService.getPostImage(post.image.id);
-        const imageUrl = URL.createObjectURL(
-          new Blob([imageBlob], {
-            type: post.image.contentType,
-          })
-        );
-        setImageData(imageUrl);
-      } catch (error) {
-        console.error("Error loading image:", error);
-        setImageError(true);
-      } finally {
-        setImageLoading(false);
-      }
-    };
-
-    loadImage();
-
-    return () => {
-      if (imageData) {
-        URL.revokeObjectURL(imageData);
-      }
-    };
-  }, [post?.image?.id]);
+  const { src, loading, error } = usePostImage(post.image);
+  const html = useMemo(() => renderMarkdown(post.content), [post.content]);
 
   return (
-    <div className={styles.content}>
-      {post?.image && (
-        <div className={styles.imageContainer}>
-          {imageLoading && (
-              <div className={styles.imageLoading}>
-                <span>Loading image...</span>
-              </div>
-          )}
-          {imageError && (
-            <div className={styles.imageError}>
-              <span>Failed to load image</span>
+      <div className={styles.content}>
+        {post.image && (
+            <div className={styles.image}>
+              {loading && <div className={`skeleton ${styles.imageLoading}`} />}
+              {error && (
+                  <div className={styles.imageError}>
+                    <span>Failed to load image</span>
+                  </div>
+              )}
+              {src && !error && (
+                  <img
+                      src={src}
+                      alt={post.image.fileName || post.title}
+                      className={styles.imageEl}
+                  />
+              )}
             </div>
-          )}
-          {imageData && !imageError && (
-            <img
-              src={imageData}
-              alt={post.image.fileName || post.title}
-              className={styles.postImage}
-            />
-          )}
-        </div>
-      )}
+        )}
 
-      <div
-        className={styles.postText}
-        dangerouslySetInnerHTML={{ __html: getMarkdownAsHtml(content) }}
-      />
-    </div>
+        <div
+            className={styles.postText}
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </div>
   );
 };
 
