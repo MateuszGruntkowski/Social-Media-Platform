@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import apiService from "../../../services/apiService";
 import { useAuth } from "../../../context/AuthContext";
 import PostFilters from "./PostFilters";
-import PostList from "./PostList";
+import PostCard from "./PostCard";
 import NoPostsMessage from "./NoPostsMessage";
 import styles from "../styles/Home.module.css";
 
@@ -146,12 +146,17 @@ const Home = () => {
     }
 
     return (
-        <PostList
-            posts={posts}
-            onLikeToggle={handleLikeToggle}
-            likingPost={likingPost}
-            user={user}
-        />
+        <div className={styles.postList}>
+          {posts.map((post) => (
+              <PostCard
+                  key={post.id}
+                  post={post}
+                  onLikeToggle={handleLikeToggle}
+                  likingPost={likingPost}
+                  user={user}
+              />
+          ))}
+        </div>
     );
   };
 

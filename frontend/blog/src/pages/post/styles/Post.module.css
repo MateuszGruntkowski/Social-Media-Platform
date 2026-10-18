@@ -11,6 +11,13 @@
   color: #252821;
 }
 
+/* Shown above the post when deleting it fails */
+.deleteError {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #a0473a;
+}
+
 /* Loading skeleton */
 .skeletonPost {
   display: flex;

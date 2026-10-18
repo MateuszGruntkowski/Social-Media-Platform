@@ -36,6 +36,7 @@ const Post = () => {
   const [commentsLoading, setCommentsLoading] = useState(true);
   const [commentsError, setCommentsError] = useState(false);
   const [error, setError] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
   const [deletingPost, setDeletingPost] = useState(false);
 
   // The cleanup flag drops responses that arrive after the user has moved
@@ -47,6 +48,7 @@ const Post = () => {
       try {
         setLoading(true);
         setError(null);
+        setDeleteError("");
         setPost(null);
         const postData = await apiService.getPost(id);
         if (!cancelled) setPost(postData);
@@ -89,7 +91,10 @@ const Post = () => {
 
     try {
       const updatedPost = await apiService.togglePostLike(id);
-      setPost(updatedPost);
+      // The user may have moved to another post while the request was running
+      setPost((prev) =>
+          prev && String(prev.id) === String(updatedPost.id) ? updatedPost : prev
+      );
     } catch (err) {
       console.error("Error toggling like:", err);
     }
@@ -102,11 +107,13 @@ const Post = () => {
 
     try {
       setDeletingPost(true);
+      setDeleteError("");
       await apiService.deletePost(id);
       navigate("/");
     } catch (err) {
       console.error("Error deleting post:", err);
-      setError("Failed to delete post.");
+      // Not setError: that would replace the whole post with an error page
+      setDeleteError("Failed to delete post.");
     } finally {
       setDeletingPost(false);
     }
@@ -149,6 +156,12 @@ const Post = () => {
 
     return (
         <>
+          {deleteError && (
+              <p className={styles.deleteError} role="alert">
+                {deleteError}
+              </p>
+          )}
+
           <PostArticle post={post} onLikeToggle={handleLikeToggle} />
 
           <PostComments

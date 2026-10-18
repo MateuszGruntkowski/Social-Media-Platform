@@ -83,6 +83,12 @@
   width: 100%;
 }
 
+/* Continuous feed, dividers live on each post row */
+.postList {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 640px) {
   .skeletonRow {
     grid-template-columns: 32px minmax(0, 1fr);
