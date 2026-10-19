@@ -25,7 +25,7 @@ const Navbar = () => {
         <div className={styles.inner}>
           <div className={styles.left}>
             <Link to="/" className={styles.brand}>
-              Blog Platform
+              Social Platform
             </Link>
             {user && admin && <span className={styles.admin}>Admin</span>}
           </div>
