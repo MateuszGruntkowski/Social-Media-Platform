@@ -1,15 +1,14 @@
-# Social-Media Platform
+# Social Platform
 
-A full-featured social media platform with post creation, drafts, image uploads, comments, likes, and admin moderation. Users can write and share content, while admins manage tags, categories, and moderate posts.
+A full-featured social platform with post creation, drafts, image uploads, comments, likes, and admin moderation. Users can write and share content, while admins manage tags, categories, and moderate posts.
 
 ## Preview
-https://github.com/user-attachments/assets/322595e5-01a3-4fb6-a4d8-f4283f655307
+https://github.com/user-attachments/assets/0c2d103d-bed5-4c56-bc54-e6e9f0281223
 
 ## Screenshots
 ![Home Page](Screenshots/Home.png)
+![Drafts](Screenshots/DraftPosts.png)
 ![Post](Screenshots/Post.png)
-![New Post](Screenshots/NewPost.png)
-
 
 ## Main Features
 
